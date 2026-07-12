@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card">
+    <h2>Vehicle Registry</h2>
+    <div class="filter-bar">
+        <input id="vehiclesSearchInput" type="search" placeholder="Search vehicle, district, route, profile, event..." />
+        <select id="vehiclesDistrictSelect"></select>
+        <button id="vehiclesSearchApplyBtn" type="button">Search</button>
+        <button id="vehiclesSearchClearBtn" type="button">Clear</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Vehicle</th>
+                <th>District</th>
+                <th>Profile</th>
+                <th>Route</th>
+                <th>Zone</th>
+                <th>Trips Total</th>
+                <th>Trips 24h</th>
+                <th>Risk</th>
+                <th>Prediction</th>
+                <th>Weight</th>
+                <th>Overload</th>
+                <th>Updated</th>
+            </tr>
+        </thead>
+        <tbody id="vehiclesTableBody">
+            <tr><td colspan="12">Loading vehicles...</td></tr>
+        </tbody>
+    </table>
+    <div id="vehiclesPageControls" class="page-controls"></div>
+</section>
+<script src="{{ url_for('static', filename='vehicles.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,240 @@
+THARANI SENGOL PROJECT OVERVIEW
+================================
+
+1) What this project does
+-------------------------
+This project is an AI-powered fleet monitoring and risk intelligence system for heavy trucks.
+It simulates live truck movement, ingests GPS and camera data, predicts risk and violations,
+tracks route behavior, estimates vehicle load (weight), and shows everything in a real-time web dashboard.
+
+Main goals:
+- Detect suspicious or risky vehicle behavior.
+- Monitor route compliance, trip frequency, and GPS signal quality.
+- Predict near-term violation probability per vehicle.
+- Predict truck weight and overload risk.
+- Provide explainable risk insights, alerts, analytics, and exportable reports.
+
+
+2) High-level architecture
+--------------------------
+A) Backend API + dashboard server
+- File: app.py
+- Framework: Flask
+- Responsibilities:
+  - Receives GPS and camera telemetry.
+  - Maintains live vehicle state and risk scoring.
+  - Runs ML-based prediction logic.
+  - Stores snapshots/events in SQLite.
+  - Serves JSON APIs and HTML pages.
+
+B) Live telemetry simulation
+- File: simulator.py
+- Simulates a configurable number of trucks moving on routes.
+- Continuously posts GPS data to /gps endpoint.
+- Reads control settings from backend (/api/control-state).
+
+C) Camera ingestion
+- File: camera_ingest.py
+- Reads from webcam (OpenCV) OR runs virtual camera mode if no camera is available.
+- Estimates truck count and posts events to /camera endpoint.
+
+D) Frontend dashboard
+- HTML templates: templates/*.html
+- JavaScript logic: static/*.js
+- CSS: static/site.css
+- Displays:
+  - Live vehicle cards and map context
+  - Alerts and heatmap trends
+  - AI predictions and module metrics
+  - Driver behavior and per-vehicle detail views
+
+E) Data + model training utilities
+- Classification dataset generator: dataset_gen.py
+- Classification training: train_model.py
+- Weight dataset generator: weight_dataset_gen.py
+- Weight model training: train_weight_model.py
+- Trained models:
+  - illegal_mining_rf.pkl (classification)
+  - weight_model.pkl (regression)
+
+F) Service orchestrator
+- File: run_all.py
+- Starts app.py + simulator.py (+ optional camera_ingest.py)
+- Sets runtime environment options (fleet size, route count, weight lock thresholds)
+
+
+3) How the system works (end-to-end flow)
+------------------------------------------
+Step 1: Startup
+- run_all.py launches backend and simulator.
+- Optional camera ingest can also be launched.
+
+Step 2: Telemetry generation/ingestion
+- simulator.py sends GPS payloads to /gps for many truck IDs.
+- camera_ingest.py sends count events to /camera.
+
+Step 3: Backend processing
+- app.py updates in-memory and persisted vehicle state.
+- Computes risk score and risk level.
+- Computes prediction label/probability (violation tendency).
+- Computes/locks predicted vehicle weight and overload flag.
+- Generates alerts when rules/thresholds are violated.
+- Updates map/heatmap context and historical metrics.
+
+Step 4: Storage
+- SQLite database: tharani_sengol.db
+- Stores events, snapshots, violations, alerts, and supporting telemetry.
+
+Step 5: Visualization + APIs
+- Frontend polls APIs such as:
+  - /api/lorries
+  - /api/alerts
+  - /api/map-context
+  - /api/history/risk
+  - /api/module-predictions
+  - /api/driver-behavior
+  - /api/vehicle/<vehicle_id>/detail
+  - /api/vehicle/<vehicle_id>/explain
+- User views pages like dashboard, analytics, vehicles, AI prediction, and admin.
+
+
+4) Core features
+----------------
+- Live fleet simulation at scale (configurable truck/route counts).
+- District/route/zone-aware tracking.
+- Risk scoring and risk-level classification.
+- Prediction labels and probability outputs for violations.
+- Weight regression and overload detection.
+- Driver behavior indicators and anomaly scoring.
+- Heatmap + cluster insights.
+- Digital twin style operational metrics.
+- CSV export endpoints for alerts/violations/trips.
+- Role-based access with JWT login.
+
+
+5) Important files and folders
+------------------------------
+- app.py: Main backend application and API routes.
+- run_all.py: Start/stop orchestration script.
+- simulator.py: GPS telemetry simulator.
+- camera_ingest.py: Camera or virtual camera event ingest.
+- requirements.txt: Python dependency list.
+- templates/: HTML views.
+- static/: Frontend JavaScript and styling.
+- tharani_sengol.db: SQLite database.
+- user_accounts.json: User/role records for login.
+- trichy_vehicle_dataset.csv: Classification training data.
+- weight_dataset.csv: Weight regression training data.
+- illegal_mining_rf.pkl: Trained classifier model.
+- weight_model.pkl: Trained regressor model.
+
+
+6) Technologies and libraries used
+----------------------------------
+Backend and API:
+- Python
+- Flask
+- JSON + REST endpoints
+- SQLite (sqlite3)
+
+Machine learning and data:
+- scikit-learn (RandomForestClassifier, RandomForestRegressor, IsolationForest, KMeans)
+- pandas
+- numpy
+- joblib
+- SHAP (optional explainability import path in app)
+
+Geospatial and logic:
+- shapely (Point/Polygon/LineString for route/zone checks)
+
+Authentication and security:
+- PyJWT (JWT token issue/verify)
+- Role-based authorization (admin/officer/owner/operator)
+
+Simulation and ingestion:
+- requests (HTTP client)
+- OpenCV (camera counting flow)
+
+Frontend:
+- Jinja2 templates (via Flask render_template)
+- Vanilla JavaScript modules in static/
+- CSS styling in static/site.css
+
+
+7) Major web pages
+------------------
+- /login
+- /
+- /dashboard
+- /vehicles
+- /vehicles/<vehicle_id>
+- /alerts
+- /analytics
+- /ai-prediction
+- /module-predictions
+- /driver-behavior
+- /admin
+
+
+8) Major API groups
+-------------------
+Auth and users:
+- /api/auth/login
+- /api/auth/logout
+- /api/auth/me
+- /api/users
+
+Telemetry and operational APIs:
+- /gps
+- /camera
+- /api/routes
+- /api/vehicles
+- /api/lorries
+- /api/trips
+- /api/alerts
+
+AI and analytics APIs:
+- /api/predictions
+- /api/ai-overview
+- /api/module-predictions
+- /api/driver-behavior
+- /api/history/risk
+- /api/history/violation-rate
+- /api/heatmap
+- /api/heatmap/clusters
+- /api/digital-twin
+
+Per-vehicle explainability:
+- /api/vehicle/<vehicle_id>/detail
+- /api/vehicle/<vehicle_id>/explain
+
+Exports:
+- /export/alerts.csv
+- /export/violations.csv
+- /export/trips.csv
+
+Admin/control:
+- /api/control-state
+- /api/admin/config
+- /api/admin/control
+- /api/admin/scenario
+- /api/admin/reset-runtime
+
+
+9) Typical run command
+----------------------
+From project root:
+- python run_all.py
+
+Optional:
+- python run_all.py --camera
+
+Opens dashboard at:
+- http://127.0.0.1:8000/
+
+
+10) Note about geoguard-phase4 folder
+-------------------------------------
+- geoguard-phase4/backend currently contains only a venv folder.
+- geoguard-phase4/frontend is currently empty.
+- The active, functional application is the root-level Flask project files listed above.

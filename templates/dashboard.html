@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card toolbar-card">
+    <h2>Consolidated Command Center</h2>
+    <div class="toolbar-actions">
+        <a class="btn-link" href="/export/alerts.csv">Export Alerts CSV</a>
+        <a class="btn-link" href="/export/violations.csv">Export Violations CSV</a>
+        <a class="btn-link" href="/export/trips.csv">Export Trips CSV</a>
+    </div>
+</section>
+
+<section class="grid two">
+    <div class="card">
+        <h2>Live Fleet Summary</h2>
+        <div class="summary-grid">
+            <div><span>Vehicles</span><strong id="vehicleCount">0</strong></div>
+            <div><span>Total Trips</span><strong id="tripCount">0</strong></div>
+            <div><span>Dangerous</span><strong id="dangerCount">0</strong></div>
+            <div><span>Suspicious</span><strong id="suspiciousCount">0</strong></div>
+        </div>
+        <p class="muted" id="lastSync">Waiting for data...</p>
+    </div>
+    <div class="card">
+        <h2>Live Alerts</h2>
+        <div id="alertFeed" class="scroll-box"></div>
+    </div>
+</section>
+
+<section class="grid two">
+    <div class="card">
+        <h2>Overall Tamil Nadu Stats</h2>
+        <div class="summary-grid">
+            <div><span>Configured Trucks</span><strong id="tnConfiguredTrucks">0</strong></div>
+            <div><span>Configured Routes</span><strong id="tnConfiguredRoutes">0</strong></div>
+            <div><span>Configured Mines</span><strong id="tnConfiguredMines">0</strong></div>
+            <div><span>Active Trucks</span><strong id="tnActiveTrucks">0</strong></div>
+        </div>
+        <div class="summary-grid" style="margin-top:8px;">
+            <div><span>Overloads</span><strong id="tnOverloads">0</strong></div>
+            <div><span>Avg Risk</span><strong id="tnAvgRisk">0</strong></div>
+            <div><span>Avg Threat</span><strong id="tnAvgThreat">0</strong></div>
+            <div><span>State</span><strong>Tamil Nadu</strong></div>
+        </div>
+    </div>
+    <div class="card">
+        <h2>Single Lorry Stats</h2>
+        <label for="singleLorrySearchInput" class="muted">Search Lorry (example: truck_120 or 120)</label>
+        <div class="filter-bar" style="margin-top:8px;">
+            <input id="singleLorrySearchInput" type="search" placeholder="Search by truck id" class="single-lorry-select" />
+            <button id="singleLorrySearchBtn" type="button">Show</button>
+            <button id="singleLorryClearBtn" type="button">Clear</button>
+        </div>
+        <div id="singleLorryPanel" class="vehicle-meta single-lorry-panel" style="margin-top:10px;">Waiting for lorry data...</div>
+    </div>
+</section>
+
+<section class="card">
+    <h2>District Stats (Tamil Nadu)</h2>
+    <div id="districtPills" class="district-pill-list"></div>
+    <div class="scroll-box">
+        <table>
+            <thead>
+                <tr>
+                    <th>District</th>
+                    <th>Active Trucks</th>
+                    <th>Overloads</th>
+                    <th>Avg Risk</th>
+                    <th>Avg Threat</th>
+                </tr>
+            </thead>
+            <tbody id="districtStatsBody">
+                <tr><td colspan="5">Loading district stats...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Map and Heat Intelligence</h2>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <div class="heat-explain">
+        <strong>How heatmap works:</strong>
+        Brighter red means repeated or severe violations in that area. Soft colors indicate isolated low-severity violations.
+    </div>
+    <div id="map"></div>
+</section>
+
+<section class="card">
+    <h2>Vehicle Risk Board (paginated)</h2>
+    <div class="filter-bar">
+        <input id="lorrySearchInput" type="search" placeholder="Search truck, district, route, event..." />
+        <select id="districtFilterSelect"></select>
+        <button id="searchApplyBtn" type="button">Search</button>
+        <button id="searchClearBtn" type="button">Clear</button>
+    </div>
+    <div id="vehicleCards" class="vehicle-grid"></div>
+    <div id="lorryPageControls" class="page-controls"></div>
+</section>
+
+<section class="card">
+    <h2>AI Prediction Stack</h2>
+    <div class="grid two model-grid">
+        <div class="model-panel">
+            <h3>Classification Model</h3>
+            <p class="muted">Predicts illegal behavior probability from GPS, route, trip, and risk signals.</p>
+            <div class="summary-grid">
+                <div><span>Tracked Vehicles</span><strong id="stackClassVehicles">0</strong></div>
+                <div><span>High Predictions</span><strong id="stackClassHigh">0</strong></div>
+                <div><span>Medium Predictions</span><strong id="stackClassMedium">0</strong></div>
+                <div><span>Avg Probability</span><strong id="stackClassProb">0%</strong></div>
+            </div>
+        </div>
+        <div class="model-panel">
+            <h3>Regression Model</h3>
+            <p class="muted">Estimates truck load in tons and raises overload alerts when the limit is exceeded.</p>
+            <div class="summary-grid">
+                <div><span>Locked Weights</span><strong id="stackRegLocked">0</strong></div>
+                <div><span>Overloads</span><strong id="stackRegOverload">0</strong></div>
+                <div><span>Avg Weight</span><strong id="stackRegAvgWeight">0.0</strong></div>
+                <div><span>Fleet Scale</span><strong id="stackSystemScale">0 / 0</strong></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Historical Risk Trend (SQLite)</h2>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <canvas id="riskHistoryChart" height="96"></canvas>
+</section>
+
+<dialog id="riskExplainModal" class="risk-modal">
+    <h3 id="explainTitle">Risk Explanation</h3>
+    <p id="explainSummary" class="muted"></p>
+    <div class="grid two">
+        <div>
+            <h4>Risk Reasons</h4>
+            <ul id="riskReasonsList"></ul>
+        </div>
+        <div>
+            <h4>Safe Reasons</h4>
+            <ul id="safeReasonsList"></ul>
+        </div>
+    </div>
+    <p id="heatHelp" class="muted"></p>
+    <div class="modal-actions">
+        <button id="closeExplainBtn" type="button">Close</button>
+    </div>
+</dialog>
+
+<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+{% endblock %}

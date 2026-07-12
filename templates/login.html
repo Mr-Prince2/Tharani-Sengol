@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login | Tharani Sengol</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}" />
+</head>
+<body>
+<main class="content" style="max-width:520px;margin-top:48px;">
+    <section class="card">
+        <h2>Secure Login</h2>
+        <p class="muted">Sign in using your assigned role credentials.</p>
+        <form id="loginForm" class="grid" style="gap:10px;">
+            <input id="usernameInput" type="text" placeholder="Username" autocomplete="username" required />
+            <input id="passwordInput" type="password" placeholder="Password" autocomplete="current-password" required />
+            <button type="submit">Login</button>
+        </form>
+        <p id="loginStatus" class="muted" style="margin-top:10px;">Credentials are loaded from the live auth store.</p>
+        <div class="toolbar-actions" style="margin-top:10px;">
+            <a class="btn-link" href="/">Go To Home</a>
+        </div>
+    </section>
+</main>
+<script src="{{ url_for('static', filename='auth.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='login.js') }}?v=2"></script>
+</body>
+</html>

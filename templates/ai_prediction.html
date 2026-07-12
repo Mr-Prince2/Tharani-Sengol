@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card ai-hero">
+    <h2>AI Prediction Center</h2>
+    <p class="muted">Two-model pipeline: a classification model for illegal behavior and a regression model for truck load estimation.</p>
+    <div class="summary-grid ai-summary">
+        <div><span>Vehicles</span><strong id="aiVehicleCount">0</strong></div>
+        <div><span>High Risk</span><strong id="aiHighRiskCount">0</strong></div>
+        <div><span>Overloads</span><strong id="aiOverloadCount">0</strong></div>
+        <div><span>Avg Weight</span><strong id="aiAverageWeight">0.0</strong></div>
+    </div>
+</section>
+
+<section class="grid two">
+    <div class="card model-panel">
+        <h2>System Architecture</h2>
+        <p class="muted">GPS → Feature Engine → Violation Model (.pkl) + Weight Model (.pkl) + Anomaly Detector + Time-Series Forecast + Driver Analysis + Fusion Engine → Alerts, Heatmap, Clusters, Digital Twin, and Dashboard.</p>
+        <div class="summary-grid ai-summary" style="margin-bottom:10px;">
+            <div><span>Configured Trucks</span><strong id="aiConfiguredTrucks">0</strong></div>
+            <div><span>Configured Routes</span><strong id="aiConfiguredRoutes">0</strong></div>
+            <div><span>Mine Zones</span><strong id="aiMineZones">0</strong></div>
+            <div><span>Dump Zones</span><strong id="aiDumpZones">0</strong></div>
+        </div>
+        <ul class="stack-list">
+            <li>Classification model tracks illegal behavior probability.</li>
+            <li>Regression model estimates truck load in tons.</li>
+            <li>Overload detection raises alerts when the 20 ton limit is crossed.</li>
+            <li>Isolation Forest flags unknown suspicious behavior patterns.</li>
+            <li>LSTM-style time-series module predicts next route and future load.</li>
+            <li>Driver behavior analytics tracks harsh braking and speed fluctuation.</li>
+            <li>K-Means clustering marks potential illegal mining hotspots.</li>
+            <li>Fusion model computes final threat score from all AI signals.</li>
+            <li>SHAP-style explainability shows top reasons behind weight output.</li>
+        </ul>
+    </div>
+    <div class="card model-panel">
+        <h2>Live Model Feed</h2>
+        <p id="aiModuleRuntimeInfo" class="muted">Weight lock runtime details will appear here.</p>
+        <div class="filter-bar">
+            <input id="aiSearchInput" type="search" placeholder="Search truck, district, route, driver, anomaly..." />
+            <select id="aiDistrictSelect"></select>
+            <button id="aiSearchApplyBtn" type="button">Search</button>
+            <button id="aiSearchClearBtn" type="button">Clear</button>
+        </div>
+        <div id="aiPredictionCards" class="vehicle-grid"></div>
+        <div id="aiPageControls" class="page-controls"></div>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Advanced AI Modules</h2>
+    <div class="grid two model-grid">
+        <div class="model-panel"><h3>Isolation Forest</h3><p class="muted">Detects unknown illegal patterns and new fraud methods using anomaly scores.</p><strong id="moduleIsolation">ON</strong></div>
+        <div class="model-panel"><h3>LSTM Forecast</h3><p class="muted">Predicts future route stage and future load after a trip becomes loaded and stable.</p><strong id="moduleLstm">ON</strong></div>
+        <div class="model-panel"><h3>Driver Behavior</h3><p class="muted">Tracks harsh braking and speed fluctuation to flag risky driving patterns.</p><strong id="moduleDriver">ON</strong></div>
+        <div class="model-panel"><h3>K-Means Heatmap</h3><p class="muted">Clusters illegal mining hotspots and automatically marks likely illegal zones.</p><strong id="moduleKmeans">ON</strong></div>
+        <div class="model-panel"><h3>Fusion Model</h3><p class="muted">Combines risk score, prediction model, anomaly score, and weight model into a final threat score.</p><strong id="moduleFusion">ON</strong></div>
+        <div class="model-panel"><h3>Digital Twin</h3><p class="muted">Simulates the mining system state for statewide operational visibility.</p><strong id="moduleTwin">ON</strong></div>
+        <div class="model-panel"><h3>SHAP Explainability</h3><p class="muted">Shows why prediction or threat scores are high using feature impact summaries.</p><strong id="moduleShap">ON</strong></div>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Weight And Overload Trend</h2>
+    <p class="muted">Average locked weight and overload event count over time.</p>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <canvas id="weightHistoryChart" height="96"></canvas>
+</section>
+
+<section class="card">
+    <h2>Prediction Matrix</h2>
+    <div class="scroll-box">
+        <table class="ai-table">
+            <thead>
+                <tr>
+                    <th>Vehicle</th>
+                    <th>Trips</th>
+                    <th>Risk</th>
+                    <th>Prediction</th>
+                    <th>Predicted Weight</th>
+                    <th>Avg Weight</th>
+                    <th>Overload</th>
+                    <th>Explanation</th>
+                </tr>
+            </thead>
+            <tbody id="aiPredictionTableBody">
+                <tr><td colspan="8">Loading model data...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Chatbot Ready Topics</h2>
+    <p class="muted">Ask the assistant about district details, driver behavior, mine details, route details, overloads, anomaly scores, or final threat scores.</p>
+</section>
+
+<script src="{{ url_for('static', filename='ai_prediction.js') }}"></script>
+{% endblock %}

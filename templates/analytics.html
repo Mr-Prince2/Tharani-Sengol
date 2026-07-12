@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card toolbar-card">
+    <h2>Analytics and Exports</h2>
+    <div class="toolbar-actions">
+        <a class="btn-link" href="/export/alerts.csv">Alerts CSV</a>
+        <a class="btn-link" href="/export/violations.csv">Violations CSV</a>
+        <a class="btn-link" href="/export/trips.csv">Trips CSV</a>
+    </div>
+</section>
+
+<section class="grid two">
+    <div class="card">
+        <h2>Top Violation Hotspots</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Reason</th>
+                    <th>Avg Lat</th>
+                    <th>Avg Lon</th>
+                    <th>Hits</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for spot in hotspots %}
+                <tr>
+                    <td>{{ spot.reason }}</td>
+                    <td>{{ spot.avg_lat }}</td>
+                    <td>{{ spot.avg_lon }}</td>
+                    <td>{{ spot.hits }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4">No hotspot data available yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card">
+        <h2>Database-backed Monitoring</h2>
+        <p class="muted">All simulated telemetry, violations, alerts, and camera events are stored in SQLite database file tharani_sengol.db.</p>
+        <p class="muted">Use Dashboard page for live map and prediction feeds, Vehicles page for profile-wise fleet state, and Alerts page for historical incidents.</p>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Risk Trend by Vehicle (Last 4 Hours)</h2>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <canvas id="analyticsRiskChart" height="95"></canvas>
+</section>
+
+<section class="card">
+    <h2>Violation Rate (5-Min Buckets)</h2>
+    <p class="muted">This helps validate whether simulated risk is driven by occasional spikes or continuous abnormal behavior.</p>
+    <canvas id="violationRateChart" height="90"></canvas>
+</section>
+
+<script src="{{ url_for('static', filename='analytics.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card">
+    <h2>Admin Configuration</h2>
+    <p class="muted">Edit vehicle profile assignment and permit limits live. Changes are stored in SQLite and applied immediately.</p>
+    <div class="toolbar-actions" style="margin-bottom:10px;">
+        <button id="resetDataBtn" type="button">Reset Live Data (Fresh Simulation)</button>
+        <a class="btn-link" href="/">Go To Home</a>
+    </div>
+    <table id="adminTable">
+        <thead>
+            <tr>
+                <th>Vehicle</th>
+                <th>Profile</th>
+                <th>Allowed Trips (24h)</th>
+                <th>Window Hours</th>
+                <th>Start Hour</th>
+                <th>End Hour</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr data-vehicle="{{ row.vehicle_id }}">
+                <td>{{ row.vehicle_id }}</td>
+                <td>
+                    <select class="profile">
+                        <option value="safe" {% if row.profile == 'safe' %}selected{% endif %}>safe</option>
+                        <option value="normal" {% if row.profile == 'normal' %}selected{% endif %}>normal</option>
+                        <option value="high_risk" {% if row.profile == 'high_risk' %}selected{% endif %}>high_risk</option>
+                    </select>
+                </td>
+                <td><input class="allowed" type="number" min="1" value="{{ row.allowed_24h_trips }}" /></td>
+                <td><input class="window" type="number" min="1" max="48" value="{{ row.rolling_window_hours }}" /></td>
+                <td><input class="start" type="number" min="0" max="23" value="{{ row.start_hour }}" /></td>
+                <td><input class="end" type="number" min="1" max="24" value="{{ row.end_hour }}" /></td>
+                <td><button class="save-btn" type="button">Save</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div id="adminPageControls" class="page-controls"></div>
+    <p class="muted" id="adminStatus">Ready</p>
+</section>
+
+<section class="card">
+    <h2>Scenario and Environment Controls</h2>
+    <div class="toolbar-actions">
+        <button type="button" class="preset-btn" data-preset="calm_day">Calm Day</button>
+        <button type="button" class="preset-btn" data-preset="suspicious_day">Suspicious Day</button>
+        <button type="button" class="preset-btn" data-preset="raid_day">Raid Day</button>
+    </div>
+    <table>
+        <tbody>
+            <tr>
+                <td>Weather</td>
+                <td>
+                    <select id="weatherSel">
+                        <option value="clear">clear</option>
+                        <option value="rain">rain</option>
+                        <option value="dust">dust</option>
+                        <option value="storm">storm</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Shift Mode</td>
+                <td>
+                    <select id="shiftSel">
+                        <option value="auto">auto</option>
+                        <option value="morning_peak">morning_peak</option>
+                        <option value="noon_low">noon_low</option>
+                        <option value="evening_peak">evening_peak</option>
+                        <option value="night_low">night_low</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>GPS Noise</td>
+                <td><input id="gpsNoise" type="number" min="0" max="0.4" step="0.01" value="0.10" /></td>
+            </tr>
+            <tr>
+                <td>Camera Noise</td>
+                <td><input id="cameraNoise" type="number" min="0" max="0.4" step="0.01" value="0.12" /></td>
+            </tr>
+            <tr>
+                <td>Anomaly Factor</td>
+                <td><input id="anomalyFactor" type="number" min="0.4" max="2.5" step="0.05" value="1.00" /></td>
+            </tr>
+            <tr>
+                <td>Traffic Factor</td>
+                <td><input id="trafficFactor" type="number" min="0.5" max="2.0" step="0.05" value="1.00" /></td>
+            </tr>
+        </tbody>
+    </table>
+    <p>
+        <button id="saveControlBtn" type="button">Save Control Settings</button>
+        <span class="muted" id="controlStateText">Control state not loaded yet.</span>
+    </p>
+</section>
+
+<script src="{{ url_for('static', filename='admin.js') }}"></script>
+{% endblock %}

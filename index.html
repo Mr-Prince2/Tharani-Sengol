@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GeoGuard Intelligence Dashboard</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #050510;
+            --panel: rgba(17, 24, 39, 0.9);
+            --panel-soft: rgba(31, 41, 55, 0.9);
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --border: #374151;
+            --shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            --safe: #22c55e;
+            --suspicious: #eab308;
+            --danger: #ef4444;
+        }
+
+        html, body {
+            margin: 0;
+            height: 100%;
+            font-family: 'Orbitron', 'Segoe UI', sans-serif;
+            background: #050510 url('https://cdn.pixabay.com/photo/2016/01/27/15/25/space-1164579_960_720.png') repeat top center;
+            color: var(--text);
+        }
+
+        .app {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            height: 100vh;
+        }
+
+        .dashboard {
+            background: rgba(17, 24, 39, 0.85); /* Dark transparent */
+            border-right: 2px solid #06b6d4; /* cyan neon */
+            padding: 16px;
+            overflow: auto;
+            backdrop-filter: blur(8px);
+            box-shadow: inset -5px 0 20px rgba(6, 182, 212, 0.3);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 26px;
+            line-height: 1.2;
+            text-shadow: 0 0 10px #ff0000;
+            color: #ff4444;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .sub {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .summary-card {
+            border: 1px solid var(--border);
+            background: var(--panel);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 10px;
+        }
+
+        .label {
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .value {
+            margin-top: 5px;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .section-title {
+            margin-top: 16px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #466064;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+
+        .route-legend {
+            display: grid;
+            gap: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--panel);
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .legend-item.active {
+            border-color: #0d9488;
+            background: #e7f8f6;
+        }
+
+        .legend-item.dimmed {
+            opacity: 0.35;
+        }
+
+        .legend-swatch {
+            width: 12px;
+            height: 12px;
+            border-radius: 999px;
+            flex: 0 0 auto;
+        }
+
+        .legend-copy {
+            font-size: 12px;
+        }
+
+        .status-box {
+            margin-top: 12px;
+            border-radius: 10px;
+            border: 1px solid #b7dae2;
+            color: #0b5565;
+            background: #e7f4f8;
+            padding: 10px;
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        .alert-list {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--panel-soft);
+            max-height: 150px;
+            overflow: auto;
+            padding: 8px;
+            display: grid;
+            gap: 6px;
+        }
+
+        .alert-item {
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 12px;
+            border: 1px solid #eab308;
+            background: rgba(234, 179, 8, 0.1);
+            color: #fef08a;
+        }
+
+        .alert-item.critical {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+        }
+
+        .vehicle-cards {
+            margin-top: 10px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .vehicle-card {
+            border: 1px solid var(--border);
+            border-left: 6px solid var(--safe);
+            border-radius: 12px;
+            background: var(--panel);
+            padding: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .vehicle-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 8px;
+        }
+
+        .vehicle-id {
+            font-weight: 800;
+            font-size: 15px;
+        }
+
+        .vehicle-route {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .badge-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .badge {
+            border-radius: 999px;
+            padding: 4px 8px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-safe { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid #22c55e; }
+        .badge-suspicious { background: rgba(234, 179, 8, 0.2); color: #fde047; border: 1px solid #eab308; }
+        .badge-danger { background: rgba(239, 68, 68, 0.3); color: #fca5a5; border: 1px solid #ef4444; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
+        .vehicle-meta {
+            margin-top: 8px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 6px;
+        }
+
+        .meta-item {
+            background: var(--panel-soft);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px;
+            font-size: 11px;
+        }
+
+        .risk-graph {
+            width: 100%;
+            height: 38px;
+            margin-top: 8px;
+            border-radius: 8px;
+            background: linear-gradient(180deg, #f7fbfd 0%, #eff7f9 100%);
+            border: 1px solid var(--border);
+        }
+
+        .last-event {
+            margin-top: 8px;
+            padding: 7px;
+            border-radius: 8px;
+            background: #fff8db;
+            border: 1px solid #f2e4ab;
+            color: #755200;
+            font-size: 11px;
+        }
+
+        .map-shell {
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .zone-label {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #d2dfde;
+            border-radius: 999px;
+            color: #21333a;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+        }
+
+        @media (max-width: 980px) {
+            .app {
+                grid-template-columns: 1fr;
+                grid-template-rows: 56vh auto;
+                height: auto;
+            }
+            .dashboard {
+                border-right: 0;
+                border-bottom: 1px solid var(--border);
+            }
+            #map {
+                min-height: 44vh;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <aside class="dashboard">
+        <h1>GeoGuard Risk Intelligence</h1>
+        <div class="sub" id="routeSummary">Loading routes and threat signals...</div>
+
+        <div class="summary-grid">
+            <div class="summary-card"><div class="label">Vehicles</div><div class="value" id="vehicleCount">0</div></div>
+            <div class="summary-card"><div class="label">Trips</div><div class="value" id="tripCount">0</div></div>
+            <div class="summary-card"><div class="label">Alerts</div><div class="value" id="alertCount">0</div></div>
+            <div class="summary-card"><div class="label">Risky Vehicles</div><div class="value text-red-500" id="dangerCount">0</div></div>
+            <div class="summary-card"><div class="label">Sus</div><div class="value text-yellow-500" id="suspiciousCount">0</div></div>
+            <div class="summary-card"><div class="label">Time</div><div class="value" id="currentTime">--:--:--</div></div>
+        </div>
+
+        <div class="section-title">Routes</div>
+        <div class="route-legend" id="routeLegend"></div>
+
+        <div class="status-box" id="statusText">Live intelligence engine initializing...</div>
+
+        <div class="section-title text-red-500 neon-red-text" style="animation: pulse 2s infinite">EMERGENCY MEETINGS (Alerts)</div>
+        <div class="alert-list" id="alertList"></div>
+
+        <div class="section-title">Vehicle Intelligence</div>
+        <div class="vehicle-cards" id="vehicleCards"></div>
+    </aside>
+
+    <section class="map-shell">
+        <div id="map"></div>
+    </section>
+</div>
+
+<script>
+const map = L.map('map').setView([10.816, 78.730], 11);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' }).addTo(map);
+
+let markers = {};
+let routeLayers = [];
+let routeLayerMap = {};
+let latestRoutes = {};
+let selectedRouteId = null;
+let heatLayer = null;
+
+function riskStyle(risk) {
+    if (risk >= 80) {
+        return { color: '#ff0000', label: 'RISKY VEHICLE', badge: 'badge-danger' };
+    }
+    if (risk >= 50) {
+        return { color: '#eab308', label: 'SUS', badge: 'badge-suspicious' };
+    }
+    return { color: '#22c55e', label: 'CREWMATE', badge: 'badge-safe' };
+}
+
+function formatClock(dateObj = new Date()) {
+    return dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+function formatTimestamp(value) {
+    if (!value) return 'n/a';
+    const dt = new Date(value);
+    if (Number.isNaN(dt.getTime())) return String(value);
+    return dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+function drawRiskGraph(points) {
+    if (!points || points.length === 0) {
+        return '<svg class="risk-graph" viewBox="0 0 100 30"></svg>';
+    }
+    const values = points.map(p => Number(p.risk || 0));
+    const max = Math.max(100, ...values);
+    const min = Math.min(0, ...values);
+    const span = Math.max(1, max - min);
+    const step = values.length > 1 ? 100 / (values.length - 1) : 100;
+    const poly = values.map((v, idx) => {
+        const x = idx * step;
+        const y = 30 - ((v - min) / span) * 30;
+        return `${x.toFixed(2)},${y.toFixed(2)}`;
+    }).join(' ');
+    return `<svg class="risk-graph" viewBox="0 0 100 30" preserveAspectRatio="none"><polyline points="${poly}" fill="none" stroke="#0e7490" stroke-width="1.8" /></svg>`;
+}
+
+function updateCurrentClock() {
+    document.getElementById('currentTime').textContent = formatClock();
+}
+
+function updateLegendStyles() {
+    const legend = document.getElementById('routeLegend');
+    legend.querySelectorAll('.legend-item').forEach(item => {
+        const routeId = item.getAttribute('data-route-id');
+        item.classList.remove('active', 'dimmed');
+        if (selectedRouteId === null) {
+            return;
+        }
+        if (selectedRouteId === routeId) {
+            item.classList.add('active');
+        } else {
+            item.classList.add('dimmed');
+        }
+    });
+}
+
+function toggleRouteFilter(routeId) {
+    selectedRouteId = selectedRouteId === routeId ? null : routeId;
+    updateVisibility();
+}
+
+function updateVisibility() {
+    updateLegendStyles();
+    Object.entries(routeLayerMap).forEach(([layerRouteId, layers]) => {
+        const visible = selectedRouteId === null || selectedRouteId === layerRouteId;
+        layers.forEach(layer => {
+            if (visible) map.addLayer(layer);
+            else map.removeLayer(layer);
+        });
+    });
+    refreshDashboard();
+}
+
+function clearRouteLayers() {
+    routeLayers.forEach(layer => map.removeLayer(layer));
+    routeLayers = [];
+    routeLayerMap = {};
+}
+
+function buildRouteLegend(routes) {
+    const legend = document.getElementById('routeLegend');
+    legend.innerHTML = Object.entries(routes).map(([routeId, route]) => `
+        <div class="legend-item" data-route-id="${routeId}">
+            <span class="legend-swatch" style="background:${route.color}"></span>
+            <div class="legend-copy"><strong>${route.name}</strong><br>${route.mine_zone.name} to ${route.dump_zone.name}</div>
+        </div>
+    `).join('');
+
+    Object.entries(routes).forEach(([routeId]) => {
+        const item = legend.querySelector(`[data-route-id="${routeId}"]`);
+        item.addEventListener('click', () => toggleRouteFilter(routeId));
+    });
+    updateLegendStyles();
+}
+
+async function loadRoutes() {
+    const response = await fetch('/routes');
+    latestRoutes = await response.json();
+    clearRouteLayers();
+    buildRouteLegend(latestRoutes);
+
+    const bounds = [];
+    Object.entries(latestRoutes).forEach(([routeId, route]) => {
+        routeLayerMap[routeId] = [];
+        const routePath = route.path.map(point => [point[0], point[1]]);
+
+        const routeLine = L.polyline(routePath, {
+            color: route.color,
+            weight: 4,
+            opacity: 0.85,
+            dashArray: '7 8'
+        }).addTo(map);
+        routeLine.bindTooltip(route.name, { sticky: true });
+        routeLayerMap[routeId].push(routeLine);
+        routeLayers.push(routeLine);
+
+        const minePolygon = L.polygon(route.mine_zone.polygon, {
+            color: route.color,
+            fillColor: route.color,
+            fillOpacity: 0.14,
+            weight: 2
+        }).addTo(map);
+        minePolygon.bindTooltip(route.mine_zone.name, { permanent: true, direction: 'center', className: 'zone-label' });
+        routeLayerMap[routeId].push(minePolygon);
+        routeLayers.push(minePolygon);
+
+        const dumpPolygon = L.polygon(route.dump_zone.polygon, {
+            color: route.color,
+            fillColor: route.color,
+            fillOpacity: 0.14,
+            weight: 2
+        }).addTo(map);
+        dumpPolygon.bindTooltip(route.dump_zone.name, { permanent: true, direction: 'center', className: 'zone-label' });
+        routeLayerMap[routeId].push(dumpPolygon);
+        routeLayers.push(dumpPolygon);
+
+        routePath.forEach(point => bounds.push(point));
+    });
+
+    if (bounds.length > 0) {
+        map.fitBounds(bounds, { padding: [24, 24] });
+    }
+    updateRouteSummary();
+}
+
+function updateRouteSummary() {
+    if (selectedRouteId === null) {
+        document.getElementById('routeSummary').textContent = `${Object.keys(latestRoutes).length} routes active with risk, prediction, and hotspot intelligence.`;
+    } else {
+        const route = latestRoutes[selectedRouteId];
+        document.getElementById('routeSummary').textContent = `Focused on ${route.name}. Click the route again to show all.`;
+    }
+}
+
+function paintHeatmap(points) {
+    const heatPoints = (points || []).map(item => [item.lat, item.lon, Number(item.weight || 1)]);
+    if (!heatLayer) {
+        heatLayer = L.heatLayer(heatPoints, { radius: 28, blur: 24, maxZoom: 16, minOpacity: 0.2 }).addTo(map);
+        return;
+    }
+    heatLayer.setLatLngs(heatPoints);
+}
+
+function renderAlerts(alerts) {
+    document.getElementById('alertCount').textContent = alerts.length;
+    if (!alerts.length) {
+        document.getElementById('alertList').innerHTML = '<div class="alert-item">No active alerts.</div>';
+        return;
+    }
+    document.getElementById('alertList').innerHTML = alerts.slice(0, 10).map(alert => {
+        const level = alert.severity === 'critical' ? 'critical' : '';
+        return `<div class="alert-item ${level}"><strong>${alert.vehicle_id}</strong> - ${alert.message}<br>${formatTimestamp(alert.time)}</div>`;
+    }).join('');
+}
+
+async function refreshDashboard() {
+    const [vehiclesResponse, tripsResponse, alertsResponse, heatmapResponse, timelineResponse, predictionResponse] = await Promise.all([
+        fetch('/vehicles'),
+        fetch('/trips'),
+        fetch('/alerts?limit=60'),
+        fetch('/heatmap?limit=500'),
+        fetch('/risk-timeline?limit=50'),
+        fetch('/predictions')
+    ]);
+
+    const vehicles = await vehiclesResponse.json();
+    const trips = await tripsResponse.json();
+    const alerts = await alertsResponse.json();
+    const heatmap = await heatmapResponse.json();
+    const timelines = await timelineResponse.json();
+    const predictions = await predictionResponse.json();
+
+    paintHeatmap(heatmap);
+    renderAlerts(alerts);
+
+    const vehicleEntries = Object.entries(vehicles)
+        .filter(([vehicleId, vehicle]) => {
+            if (selectedRouteId === null) return true;
+            const state = trips[vehicleId] || {};
+            const routeId = vehicle.route_id || state.route_id || 'route_1';
+            return routeId === selectedRouteId;
+        })
+        .sort(([a], [b]) => a.localeCompare(b));
+
+    let vehicleTotal = 0;
+    let tripTotal = 0;
+    let dangerCount = 0;
+    let suspiciousCount = 0;
+    let latestTimestamp = 0;
+
+    const cards = vehicleEntries.map(([vehicleId, vehicle]) => {
+        const state = trips[vehicleId] || {};
+        const routeId = vehicle.route_id || state.route_id || 'route_1';
+        const route = latestRoutes[routeId] || null;
+        const routeName = vehicle.route_name || state.route_name || route?.name || routeId;
+        const zoneName = vehicle.zone_name || state.current_zone_name || 'Outside';
+        const tripCount = Number(state.trips || 0);
+        const trips24h = Number(state.trips_24h || 0);
+        const updatedAt = state.updated_at || vehicle.timestamp;
+        const risk = Number(state.risk || 0);
+        const riskVisual = riskStyle(risk);
+        const predict = predictions[vehicleId] || state.prediction || { label: 'LOW', probability: 0.0, reason: 'n/a' };
+        const eventText = state.last_event || 'Waiting for route';
+        const history = state.history || [];
+        const lastViolation = history.length ? history[history.length - 1].reason : 'No violations';
+
+        vehicleTotal += 1;
+        tripTotal += tripCount;
+        if (risk >= 80) dangerCount += 1;
+        else if (risk >= 50) suspiciousCount += 1;
+
+        const ts = updatedAt ? new Date(updatedAt).getTime() : 0;
+        if (ts > latestTimestamp) latestTimestamp = ts;
+
+        if (markers[vehicleId]) {
+            markers[vehicleId].setLatLng([vehicle.lat, vehicle.lon]);
+            markers[vehicleId].setStyle({ color: riskVisual.color, fillColor: riskVisual.color });
+        } else {
+            markers[vehicleId] = L.circleMarker([vehicle.lat, vehicle.lon], {
+                radius: 9,
+                color: riskVisual.color,
+                fillColor: riskVisual.color,
+                fillOpacity: 0.95,
+                weight: 3
+            }).addTo(map);
+        }
+
+        markers[vehicleId].bindPopup(`
+            <b>${vehicleId}</b><br>
+            Route: ${routeName}<br>
+            Zone: ${zoneName}<br>
+            Risk: ${risk.toFixed(1)} (${riskVisual.label})<br>
+            Prediction: ${predict.label} (${Math.round((predict.probability || 0) * 100)}%)<br>
+            Last violation: ${lastViolation}<br>
+            Trips: ${tripCount}
+        `);
+
+        return `
+            <article class="vehicle-card" style="border-left-color:${riskVisual.color}">
+                <div class="vehicle-top">
+                    <div>
+                        <div class="vehicle-id">${vehicleId}</div>
+                        <div class="vehicle-route">${routeName}<br>${route ? `${route.mine_zone.name} to ${route.dump_zone.name}` : 'Route metadata unavailable'}</div>
+                    </div>
+                    <div class="badge-row">
+                        <span class="badge ${riskVisual.badge}">${riskVisual.label}</span>
+                        <span class="badge">PRED ${predict.label}</span>
+                    </div>
+                </div>
+                <div class="vehicle-meta">
+                    <div class="meta-item"><strong>Risk</strong><br>${risk.toFixed(1)}</div>
+                    <div class="meta-item"><strong>Trips</strong><br>${tripCount} total / 24h ${trips24h}</div>
+                    <div class="meta-item"><strong>Zone</strong><br>${zoneName}</div>
+                </div>
+                ${drawRiskGraph(timelines[vehicleId] || [])}
+                <div class="last-event">${eventText}<br>Last violation: ${lastViolation}<br>Updated: ${formatTimestamp(updatedAt)}</div>
+            </article>
+        `;
+    }).join('');
+
+    document.getElementById('vehicleCards').innerHTML = cards || '<div class="status-box">No vehicles available in current filter.</div>';
+    document.getElementById('vehicleCount').textContent = vehicleTotal;
+    document.getElementById('tripCount').textContent = tripTotal;
+    document.getElementById('dangerCount').textContent = dangerCount;
+    document.getElementById('suspiciousCount').textContent = suspiciousCount;
+
+    if (selectedRouteId === null) {
+        document.getElementById('statusText').textContent = latestTimestamp
+            ? `Heatmap and prediction active across ${Object.keys(latestRoutes).length} routes. Last sync: ${formatTimestamp(latestTimestamp)}.`
+            : 'Waiting for live simulator updates.';
+    } else {
+        const route = latestRoutes[selectedRouteId];
+        document.getElementById('statusText').textContent = latestTimestamp
+            ? `${route.name} under focused watch. Last sync: ${formatTimestamp(latestTimestamp)}.`
+            : `${route.name} waiting for updates.`;
+    }
+}
+
+loadRoutes()
+    .then(refreshDashboard)
+    .catch(() => {
+        document.getElementById('statusText').textContent = 'Unable to load route data.';
+    });
+
+updateCurrentClock();
+setInterval(updateCurrentClock, 1000);
+setInterval(refreshDashboard, 1100);
+</script>
+</body>
+</html>

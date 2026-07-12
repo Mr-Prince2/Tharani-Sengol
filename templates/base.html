@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ web_name }} | Anti-Illegal Mining Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}" />
+</head>
+<body>
+<header class="site-header">
+    <div class="brand-wrap">
+        <h1>{{ web_name }}</h1>
+        <p>Tamil Nadu anti-illegal mining monitoring intelligence platform</p>
+    </div>
+    <nav>
+        {% if request.path != url_for('home') %}
+        <a href="{{ url_for('home') }}">Home</a>
+        {% endif %}
+        <a href="{{ url_for('dashboard_page') }}">Dashboard</a>
+        <a href="/government-dashboard" data-role-min="officer">Gov Compliance</a>
+        <a href="{{ url_for('ai_prediction_page') }}" data-role-min="owner">AI Prediction</a>
+        <a href="{{ url_for('module_predictions_page') }}" data-role-min="officer">Module Predictions</a>
+        <a href="{{ url_for('driver_behavior_page') }}" data-role-min="owner">Driver Behavior</a>
+        <a href="{{ url_for('vehicles_page') }}">Vehicles</a>
+        <a href="{{ url_for('alerts_page') }}">Alerts</a>
+        <a href="{{ url_for('analytics_page') }}">Analytics</a>
+        <a href="/agentic-ai">Agentic AI</a>
+        <a href="/rag-assistant">RAG Assistant</a>
+        <a href="{{ url_for('admin_page') }}" data-role-min="admin">Admin</a>
+        <span id="authUserBadge" class="muted"></span>
+        <a href="/login" id="loginNavLink">Login</a>
+        <button type="button" id="logoutBtn" class="btn-link" style="display:none;">Logout</button>
+    </nav>
+</header>
+<main class="content">
+    {% block content %}{% endblock %}
+</main>
+
+<button id="chatToggleBtn" class="chat-toggle" type="button">Ask AI</button>
+<section id="chatWidget" class="chat-widget hidden">
+    <header class="chat-header">
+        <strong>Tharani Sengol AI Assistant</strong>
+        <button id="chatCloseBtn" type="button" class="chat-close">×</button>
+    </header>
+    <div id="chatMessages" class="chat-messages">
+        <div class="chat-bubble bot">Ask about a district, truck, route, mine zone, driver behavior, anomaly, or threat score.</div>
+    </div>
+    <form id="chatForm" class="chat-form">
+        <input id="chatInput" type="text" placeholder="Ask about truck_42, Salem, route_12..." autocomplete="off" />
+        <button type="submit">Send</button>
+    </form>
+</section>
+
+<script src="{{ url_for('static', filename='auth.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='chatbot.js') }}?v=2"></script>
+</body>
+</html>

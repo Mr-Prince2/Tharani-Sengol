@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card ai-hero">
+    <h2>Driver Behavior Alignment</h2>
+    <p class="muted">This page shows whether driver behavior risk matches profile risk expectations (especially high_risk vehicles).</p>
+    <div class="summary-grid ai-summary">
+        <div><span>Safe Profile</span><strong id="dbSafeCount">0</strong></div>
+        <div><span>Normal Profile</span><strong id="dbNormalCount">0</strong></div>
+        <div><span>High Risk Profile</span><strong id="dbHighRiskCount">0</strong></div>
+        <div><span>Misaligned</span><strong id="dbMisaligned">0</strong></div>
+    </div>
+</section>
+
+<section class="card model-panel">
+    <h2>Profile Alignment Chart</h2>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <canvas id="dbAlignChart" height="100"></canvas>
+</section>
+
+<section class="card">
+    <h2>Misaligned Drivers (Needs Attention)</h2>
+    <div class="scroll-box">
+        <table>
+            <thead>
+                <tr>
+                    <th>Vehicle</th>
+                    <th>Profile</th>
+                    <th>Risk</th>
+                    <th>Harsh Braking</th>
+                    <th>Speed Fluctuation</th>
+                    <th>Risky?</th>
+                    <th>Expected Risky?</th>
+                    <th>Final Threat</th>
+                </tr>
+            </thead>
+            <tbody id="dbMisalignedBody">
+                <tr><td colspan="8">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='driver_behavior.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+env/
+geoguard-phase4/backend/venv/
+
+# Models
+*.pkl
+*.joblib
+
+# Databases
+*.db
+*.sqlite3
+
+# VS Code
+.vscode/
+
+# Environment variables
+.env
+
+# OS files
+.DS_Store
+Thumbs.db

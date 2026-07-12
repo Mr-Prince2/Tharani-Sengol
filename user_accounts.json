@@ -1,0 +1,48 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "admin123",
+      "role": "admin",
+      "vehicle_ids": []
+    },
+    {
+      "username": "officer1",
+      "password": "officer123",
+      "role": "officer",
+      "vehicle_ids": []
+    },
+    {
+      "username": "owner1",
+      "password": "owner123",
+      "role": "owner",
+      "vehicle_ids": [
+        "truck_1",
+        "truck_2",
+        "truck_3",
+        "truck_4",
+        "truck_5"
+      ]
+    },
+    {
+      "username": "owner2",
+      "password": "owner234",
+      "role": "owner",
+      "vehicle_ids": [
+        "truck_120",
+        "truck_121",
+        "truck_122",
+        "truck_123"
+      ]
+    },
+    {
+      "username": "operator1",
+      "password": "operator123",
+      "role": "operator",
+      "vehicle_ids": [
+        "truck_1",
+        "truck_2"
+      ]
+    }
+  ]
+}

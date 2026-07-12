@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+requests
+shapely
+opencv-python
+flask
+numpy
+pandas
+scikit-learn
+joblib
+PyJWT
+qrcode
+pillow

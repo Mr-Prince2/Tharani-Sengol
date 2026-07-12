@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card">
+    <h2>Alert History</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Vehicle</th>
+                <th>Severity</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>{{ row.alert_time }}</td>
+                <td>{{ row.vehicle_id }}</td>
+                <td>{{ row.severity }}</td>
+                <td>{{ row.message }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4">No alerts yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

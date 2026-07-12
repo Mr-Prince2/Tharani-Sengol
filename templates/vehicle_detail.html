@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card toolbar-card">
+    <h2>Vehicle Detail: {{ vehicle_id }}</h2>
+    <div class="toolbar-actions">
+        <a class="btn-link" href="/vehicles">Back to Vehicle Registry</a>
+    </div>
+</section>
+
+<section class="grid two">
+    <div class="card">
+        <h2>Current Snapshot</h2>
+        <div id="vehicleDetailSummary" class="vehicle-meta">Loading vehicle data...</div>
+    </div>
+    <div class="card">
+        <h2>Risk Explainability</h2>
+        <div id="vehicleDetailExplain" class="vehicle-meta">Loading explainability...</div>
+    </div>
+</section>
+
+<section class="grid two">
+    <div class="card">
+        <h2>Recent Alerts</h2>
+        <div id="vehicleDetailAlerts" class="scroll-box"></div>
+    </div>
+    <div class="card">
+        <h2>Recent Violations</h2>
+        <div id="vehicleDetailViolations" class="scroll-box"></div>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Recent Path (latest points)</h2>
+    <div class="scroll-box">
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Lat</th>
+                    <th>Lon</th>
+                    <th>Zone</th>
+                    <th>Risk</th>
+                    <th>Prediction</th>
+                    <th>Weight</th>
+                </tr>
+            </thead>
+            <tbody id="vehicleDetailPathBody">
+                <tr><td colspan="7">Loading path data...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<script>
+    window.VEHICLE_DETAIL_ID = {{ vehicle_id|tojson }};
+</script>
+<script src="{{ url_for('static', filename='vehicle_detail.js') }}"></script>
+{% endblock %}

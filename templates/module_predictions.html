@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card ai-hero">
+    <h2>Advanced Module Predictions</h2>
+    <p class="muted">Dedicated predictions view for Isolation, LSTM Forecast, Driver Behavior, K-Means clusters, Fusion threat, Digital Twin, and SHAP explainability.</p>
+    <div class="toolbar-actions" style="margin-bottom:10px;">
+        <button id="mpExplainBtn" type="button">Explain Current Predictions</button>
+    </div>
+    <div id="mpExplainPanel" class="explain-panel hidden">
+        <h3>What The Current Predictions Mean</h3>
+        <p id="mpExplainSummary" class="muted"></p>
+        <ul id="mpExplainList"></ul>
+    </div>
+    <div class="summary-grid ai-summary">
+        <div><span>Vehicles</span><strong id="mpVehicles">0</strong></div>
+        <div><span>Anomaly Flagged</span><strong id="mpAnomaly">0</strong></div>
+        <div><span>Risky Drivers</span><strong id="mpRiskyDrivers">0</strong></div>
+        <div><span>High Threat</span><strong id="mpHighThreat">0</strong></div>
+    </div>
+</section>
+
+<section class="grid two">
+    <div class="card model-panel">
+        <h2>Isolation Forest Predictions</h2>
+        <p class="muted">Anomaly score distribution across active trucks.</p>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <canvas id="mpAnomalyChart" height="100"></canvas>
+    </div>
+    <div class="card model-panel">
+        <h2>LSTM Forecast Predictions</h2>
+        <p class="muted">Future route stage split predicted by the forecast module.</p>
+        <canvas id="mpForecastChart" height="100"></canvas>
+    </div>
+</section>
+
+<section class="grid two">
+    <div class="card model-panel">
+        <h2>Driver Behavior Predictions</h2>
+        <p class="muted">Profile-wise risky-driver ratios and alignment with profile risk expectations.</p>
+        <canvas id="mpDriverChart" height="100"></canvas>
+    </div>
+    <div class="card model-panel">
+        <h2>K-Means Hotspot Clusters</h2>
+        <p class="muted">Cluster intensity for potential illegal mining hotspots.</p>
+        <canvas id="mpClusterChart" height="100"></canvas>
+    </div>
+</section>
+
+<section class="grid two">
+    <div class="card model-panel">
+        <h2>Fusion Model Threat Predictions</h2>
+        <p class="muted">Top threat scores combining risk, anomaly, weight, and behavior signals.</p>
+        <canvas id="mpFusionChart" height="100"></canvas>
+    </div>
+    <div class="card model-panel">
+        <h2>SHAP Explainability</h2>
+        <p class="muted">Top feature impact summary for model output explanation.</p>
+        <canvas id="mpShapChart" height="100"></canvas>
+    </div>
+</section>
+
+<section class="card model-panel">
+    <h2>Digital Twin Summary</h2>
+    <div class="summary-grid ai-summary">
+        <div><span>Active Trucks</span><strong id="mpTwinActive">0</strong></div>
+        <div><span>Configured Routes</span><strong id="mpTwinRoutes">0</strong></div>
+        <div><span>Overloads</span><strong id="mpTwinOverloads">0</strong></div>
+        <div><span>Avg Final Threat</span><strong id="mpTwinThreat">0</strong></div>
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='module_predictions.js') }}"></script>
+{% endblock %}

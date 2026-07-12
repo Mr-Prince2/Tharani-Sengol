@@ -1,0 +1,119 @@
+▶️ HOW TO RUN EVERYTHING (ONE COMMAND)
+1️⃣ Run all services together
+python run_all.py
+
+This starts:
+- FastAPI backend
+- GPS simulator
+- Dashboard in your browser at http://127.0.0.1:8000/
+
+Press Ctrl+C in that terminal to stop all services.
+
+Graphs:
+Risk over time
+Trips count
+Panels:
+Top risky vehicles
+Filters:
+By risk level
+
+1. Permit Verification Module (IMPORTANT)
+
+The problem statement says:
+
+“transporting earth excavated under permitted conditions”
+
+Currently your system tracks vehicles,
+but does not fully validate permits.
+
+Add:
+Permit Database
+
+Store:
+
+Permit ID
+Allowed excavation quantity
+Approved route
+Allowed trip count
+Valid dates
+Vehicle number
+Then Verify:
+
+When GPS trip starts:
+
+Check permit validity
+Check allowed route
+Check remaining quantity
+Check max trips allowed
+
+If violated:
+→ Generate alert
+
+This is VERY important.
+
+2. Geofencing for Mining Zones
+
+Add:
+
+Approved excavation zones
+Restricted zones
+
+Using polygon boundaries.
+
+If truck:
+
+enters unauthorized excavation area
+→ Critical alert
+
+You already use Shapely,
+so this is easy to implement.
+
+3. QR / RFID Permit Validation
+
+At checkpoints:
+
+officer scans QR code
+or
+RFID tag auto-detected
+
+Then system checks:
+
+permit status
+remaining load limit
+previous trips
+
+This makes the project more realistic.
+
+4. Excavation Quantity Tracking
+
+Currently you predict truck weight.
+
+Enhance it:
+
+Total Excavated Quantity =
+Sum of all predicted loads
+
+Then compare with:
+
+Permitted Excavation Quantity
+
+If exceeded:
+→ illegal mining alert
+
+This perfectly solves the core problem.
+
+5. Government Dashboard
+
+Add a separate:
+
+“Authority Control Panel”
+
+Features:
+
+Illegal trip reports
+Heatmaps
+Permit violations
+Daily excavation summary
+Blacklisted vehicles
+
+This will impress judges a lot.
