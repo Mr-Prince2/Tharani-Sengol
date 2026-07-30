@@ -1,3 +1,71 @@
+const valueCache = {};
+function animateCountUp(id, newValue, duration = 400) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    
+    if (valueCache[id] === newValue) return;
+    const oldRaw = valueCache[id] || '0';
+    valueCache[id] = newValue;
+
+    const parseNum = str => parseFloat(String(str).replace(/[^\d.-]/g, '')) || 0;
+    const getSuffix = str => String(str).replace(/[\d.-]/g, '').trim();
+
+    const oldNum = parseNum(oldRaw);
+    const newNum = parseNum(newValue);
+    const suffix = getSuffix(newValue);
+    const isFloat = String(newValue).includes('.');
+
+    if (oldNum === newNum) {
+        el.textContent = newValue;
+        return;
+    }
+
+    const startTime = performance.now();
+    function update(time) {
+        const elapsed = time - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const current = oldNum + (newNum - oldNum) * progress;
+        
+        let display = isFloat ? current.toFixed(1) : Math.round(current);
+        if (suffix) display += ' ' + suffix;
+        el.textContent = display;
+
+        if (progress < 1) requestAnimationFrame(update);
+        else el.textContent = newValue;
+    }
+    requestAnimationFrame(update);
+}
+
+function attachButtonFeedback(btnId) {
+    const btn = document.getElementById(btnId);
+    if (!btn || btn.dataset.feedbackBound) return;
+    btn.dataset.feedbackBound = '1';
+    btn.addEventListener('click', () => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✓ Done';
+        setTimeout(() => { btn.innerHTML = originalText; }, 1000);
+    });
+}
+
+function slideMarker(marker, targetLatLng, duration=1000) {
+    const startLatLng = marker.getLatLng();
+    const startTime = performance.now();
+    function update(time) {
+        const elapsed = time - startTime;
+        const p = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - p, 3);
+        const lat = startLatLng.lat + (targetLatLng[0] - startLatLng.lat) * easeOut;
+        const lng = startLatLng.lng + (targetLatLng[1] - startLatLng.lng) * easeOut;
+        marker.setLatLng([lat, lng]);
+        if (p < 1) requestAnimationFrame(update);
+        else marker.setLatLng(targetLatLng);
+    }
+    requestAnimationFrame(update);
+}
+
+let seenAlertIds = new Set();
+let isFirstRiskChartRender = true;
+
 const map = L.map('map').setView([10.816, 78.730], 8);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; CARTO'
@@ -115,13 +183,22 @@ function renderAlerts(alerts) {
     const root = document.getElementById('alertFeed');
     if (!root) return;
     if (!alerts.length) {
-        root.innerHTML = '<div class="alert-item">No alerts yet.</div>';
+        root.innerHTML = '<div class="empty-state"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div>No alerts found.</div></div>';
         return;
     }
+    const newSeen = new Set();
     root.innerHTML = alerts.slice(0, 12).map(item => {
+        const idKey = item.vehicle_id + item.time;
+        newSeen.add(idKey);
+        const isNew = !seenAlertIds.has(idKey) && seenAlertIds.size > 0;
         const cls = item.severity === 'critical' ? 'critical' : '';
-        return `<div class="alert-item ${cls}"><strong>${item.vehicle_id}</strong> ${item.message}<br>${formatTs(item.time)}</div>`;
+        const animCls = isNew ? 'is-new' : '';
+        return `<div class="alert-item ${cls} ${animCls}"><strong>${item.vehicle_id}</strong> ${item.message}<br>${formatTs(item.time)}</div>`;
     }).join('');
+    seenAlertIds = newSeen;
+    setTimeout(() => {
+        root.querySelectorAll('.is-new').forEach(el => el.classList.remove('is-new'));
+    }, 1500);
 }
 
 async function showRiskExplain(vehicleId) {
@@ -199,6 +276,11 @@ function renderVehicleCards(items) {
     const container = document.getElementById('vehicleCards');
     if (!container) return;
 
+    if (!items || !items.length) {
+        container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg><div>No active vehicles match the current filters.</div></div>';
+        return;
+    }
+
     const activeIds = new Set(items.map(item => item.vehicle_id));
     Object.keys(markers).forEach(vehicleId => {
         if (!activeIds.has(vehicleId)) {
@@ -230,7 +312,7 @@ function renderVehicleCards(items) {
                     weight: 2,
                 }).addTo(map);
             } else {
-                markers[item.vehicle_id].setLatLng(position);
+                slideMarker(markers[item.vehicle_id], position);
                 markers[item.vehicle_id].setStyle({ color: style.color, fillColor: style.color });
             }
             markers[item.vehicle_id].bindPopup(
@@ -294,12 +376,30 @@ function renderRiskChart(historyData) {
         historyChart.destroy();
     }
 
+    isFirstRiskChartRender = false;
     historyChart = new Chart(canvas.getContext('2d'), {
         type: 'line',
         data: { labels, datasets },
         options: {
+            animation: isFirstRiskChartRender ? { duration: 1000, easing: 'easeOutQuart' } : false,
             responsive: true,
-            scales: { y: { min: 0, max: 100 } },
+            plugins: {
+                legend: { position: 'top', labels: { color: '#cbd5e1' } },
+                tooltip: { mode: 'index', intersect: false }
+            },
+            scales: {
+                x: { 
+                    title: { display: true, text: 'Time', color: '#94a3b8' },
+                    ticks: { color: '#64748b' },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                },
+                y: { 
+                    min: 0, max: 100,
+                    title: { display: true, text: 'Risk Score (0-100)', color: '#94a3b8' },
+                    ticks: { color: '#64748b' },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                }
+            }
         },
     });
 }
@@ -410,10 +510,10 @@ async function refresh() {
         const suspiciousCount = rowItems.filter(item => Number(item.risk || 0) >= 50 && Number(item.risk || 0) < 80).length;
         const tripsTotal = rowItems.reduce((sum, item) => sum + Number(item.trips || 0), 0);
 
-        setText('vehicleCount', overall.active_trucks || rowItems.length || 0);
-        setText('tripCount', tripsTotal);
-        setText('dangerCount', highRiskCount);
-        setText('suspiciousCount', suspiciousCount);
+        animateCountUp('vehicleCount', overall.active_trucks || rowItems.length || 0);
+        animateCountUp('tripCount', tripsTotal);
+        animateCountUp('dangerCount', highRiskCount);
+        animateCountUp('suspiciousCount', suspiciousCount);
         setText('lastSync', `Last sync ${new Date().toLocaleTimeString()}`);
 
         renderAlerts(alerts);
@@ -428,22 +528,22 @@ async function refresh() {
         const regression = overview.regression || {};
         const system = overview.system || {};
 
-        setText('stackClassVehicles', classification.vehicles || 0);
-        setText('stackClassHigh', classification.high_predictions || 0);
-        setText('stackClassMedium', classification.medium_predictions || 0);
-        setText('stackClassProb', `${Math.round(Number(classification.avg_probability || 0) * 100)}%`);
-        setText('stackRegLocked', regression.locked_weight_predictions || 0);
-        setText('stackRegOverload', regression.overloads || 0);
-        setText('stackRegAvgWeight', `${Number(regression.avg_predicted_weight || 0).toFixed(1)} tons`);
-        setText('stackSystemScale', `${system.configured_vehicles || 0} trucks / ${system.configured_routes || 0} routes`);
+        animateCountUp('stackClassVehicles', classification.vehicles || 0);
+        animateCountUp('stackClassHigh', classification.high_predictions || 0);
+        animateCountUp('stackClassMedium', classification.medium_predictions || 0);
+        animateCountUp('stackClassProb', `${Math.round(Number(classification.avg_probability || 0) * 100)}%`);
+        animateCountUp('stackRegLocked', regression.locked_weight_predictions || 0);
+        animateCountUp('stackRegOverload', regression.overloads || 0);
+        animateCountUp('stackRegAvgWeight', `${Number(regression.avg_predicted_weight || 0).toFixed(1)} tons`);
+        animateCountUp('stackSystemScale', `${system.configured_vehicles || 0} trucks / ${system.configured_routes || 0} routes`);
 
-        setText('tnConfiguredTrucks', overall.configured_trucks || 0);
-        setText('tnConfiguredRoutes', overall.configured_routes || 0);
-        setText('tnConfiguredMines', overall.configured_mines || 0);
-        setText('tnActiveTrucks', overall.active_trucks || 0);
-        setText('tnOverloads', overall.overloads || 0);
-        setText('tnAvgRisk', Number(overall.avg_risk || 0).toFixed(1));
-        setText('tnAvgThreat', Number(overall.avg_final_threat || 0).toFixed(1));
+        animateCountUp('tnConfiguredTrucks', overall.configured_trucks || 0);
+        animateCountUp('tnConfiguredRoutes', overall.configured_routes || 0);
+        animateCountUp('tnConfiguredMines', overall.configured_mines || 0);
+        animateCountUp('tnActiveTrucks', overall.active_trucks || 0);
+        animateCountUp('tnOverloads', overall.overloads || 0);
+        animateCountUp('tnAvgRisk', Number(overall.avg_risk || 0).toFixed(1));
+        animateCountUp('tnAvgThreat', Number(overall.avg_final_threat || 0).toFixed(1));
 
         const districtBody = document.getElementById('districtStatsBody');
         if (districtBody) {
@@ -598,3 +698,17 @@ async function refresh() {
 
 refresh();
 setInterval(refresh, 5000);
+
+document.querySelectorAll('a[href^="/export/"]').forEach(a => {
+    if (a.dataset.feedbackBound) return;
+    a.dataset.feedbackBound = '1';
+    a.addEventListener('click', function() {
+        const original = this.innerHTML;
+        this.innerHTML = '✓ Exporting...';
+        setTimeout(() => this.innerHTML = original, 1500);
+    });
+});
+attachButtonFeedback('singleLorrySearchBtn');
+attachButtonFeedback('singleLorryClearBtn');
+attachButtonFeedback('searchApplyBtn');
+attachButtonFeedback('searchClearBtn');

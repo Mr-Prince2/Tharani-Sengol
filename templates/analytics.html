@@ -9,37 +9,37 @@
     </div>
 </section>
 
-<section class="grid two">
-    <div class="card">
+<section class="card">
         <h2>Top Violation Hotspots</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Reason</th>
-                    <th>Avg Lat</th>
-                    <th>Avg Lon</th>
-                    <th>Hits</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for spot in hotspots %}
-                <tr>
-                    <td>{{ spot.reason }}</td>
-                    <td>{{ spot.avg_lat }}</td>
-                    <td>{{ spot.avg_lon }}</td>
-                    <td>{{ spot.hits }}</td>
-                </tr>
-                {% else %}
-                <tr><td colspan="4">No hotspot data available yet.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="card">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reason</th>
+                        <th>Avg Lat</th>
+                        <th>Avg Lon</th>
+                        <th>Hits</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for spot in hotspots %}
+                    <tr>
+                        <td>{{ spot.reason }}</td>
+                        <td>{{ spot.avg_lat }}</td>
+                        <td>{{ spot.avg_lon }}</td>
+                        <td>{{ spot.hits }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4">No hotspot data available yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+</section>
+<section class="card">
         <h2>Database-backed Monitoring</h2>
         <p class="muted">All simulated telemetry, violations, alerts, and camera events are stored in SQLite database file tharani_sengol.db.</p>
         <p class="muted">Use Dashboard page for live map and prediction feeds, Vehicles page for profile-wise fleet state, and Alerts page for historical incidents.</p>
-    </div>
 </section>
 
 <section class="card">

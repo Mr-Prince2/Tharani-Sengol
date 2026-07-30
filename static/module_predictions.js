@@ -1,3 +1,49 @@
+
+const valueCache = {};
+function animateCountUp(el, fromValue, toValue, duration = 400) {
+    if (!el) return;
+    if (fromValue === toValue) return;
+
+    const parseNum = str => parseFloat(String(str).replace(/[^\d.-]/g, '')) || 0;
+    const getSuffix = str => String(str).replace(/[\d.-]/g, '').trim();
+
+    const oldNum = parseNum(fromValue);
+    const newNum = parseNum(toValue);
+    const suffix = getSuffix(toValue);
+    const isFloat = String(toValue).includes('.');
+
+    if (oldNum === newNum) {
+        el.textContent = toValue;
+        return;
+    }
+
+    const startTime = performance.now();
+    function update(time) {
+        const elapsed = time - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const current = oldNum + (newNum - oldNum) * easeOut;
+        
+        let display = isFloat ? current.toFixed(1) : Math.round(current);
+        if (suffix) display += ' ' + suffix;
+        el.textContent = display;
+
+        if (progress < 1) requestAnimationFrame(update);
+        else el.textContent = toValue;
+    }
+    requestAnimationFrame(update);
+}
+
+function updateElementValue(id, newValue) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const oldValue = valueCache[id] || el.textContent;
+    if (oldValue !== String(newValue)) {
+        animateCountUp(el, oldValue, String(newValue));
+        valueCache[id] = String(newValue);
+    }
+}
+
 let mpCharts = {
     anomaly: null,
     forecast: null,

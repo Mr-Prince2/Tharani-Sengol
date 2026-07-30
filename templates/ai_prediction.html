@@ -35,7 +35,7 @@
     </div>
     <div class="card model-panel">
         <h2>Live Model Feed</h2>
-        <p id="aiModuleRuntimeInfo" class="muted">Weight lock runtime details will appear here.</p>
+        <p id="aiModuleRuntimeInfo" class="muted"><div class="skeleton-loader" style="height:14px; width:60%"></div></p>
         <div class="filter-bar">
             <input id="aiSearchInput" type="search" placeholder="Search truck, district, route, driver, anomaly..." />
             <select id="aiDistrictSelect"></select>
@@ -84,7 +84,7 @@
                 </tr>
             </thead>
             <tbody id="aiPredictionTableBody">
-                <tr><td colspan="8">Loading model data...</td></tr>
+                <tr><td colspan="8"><div class="skeleton-loader"></div></td></tr>
             </tbody>
         </table>
     </div>

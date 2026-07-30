@@ -1,16 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="card toolbar-card">
+<section class="card toolbar-card animate-fade-in stagger-1">
     <h2>Consolidated Command Center</h2>
     <div class="toolbar-actions">
-        <a class="btn-link" href="/export/alerts.csv">Export Alerts CSV</a>
-        <a class="btn-link" href="/export/violations.csv">Export Violations CSV</a>
-        <a class="btn-link" href="/export/trips.csv">Export Trips CSV</a>
+        <a class="btn-link" href="/export/alerts.csv">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Export Alerts CSV
+        </a>
+        <a class="btn-link" href="/export/violations.csv">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Export Violations CSV
+        </a>
+        <a class="btn-link" href="/export/trips.csv">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Export Trips CSV
+        </a>
     </div>
 </section>
 
 <section class="grid two">
-    <div class="card">
+    <div class="card animate-fade-in stagger-2">
         <h2>Live Fleet Summary</h2>
         <div class="summary-grid">
             <div><span>Vehicles</span><strong id="vehicleCount">0</strong></div>
@@ -20,14 +29,17 @@
         </div>
         <p class="muted" id="lastSync">Waiting for data...</p>
     </div>
-    <div class="card">
+    <div class="card animate-fade-in stagger-3">
         <h2>Live Alerts</h2>
-        <div id="alertFeed" class="scroll-box"></div>
+        <div id="alertFeed" class="scroll-box">
+            <div class="alert-item"><div class="skeleton-loader skeleton-text"></div><div class="skeleton-loader skeleton-text" style="width:60%"></div></div>
+            <div class="alert-item"><div class="skeleton-loader skeleton-text"></div><div class="skeleton-loader skeleton-text" style="width:60%"></div></div>
+        </div>
     </div>
 </section>
 
 <section class="grid two">
-    <div class="card">
+    <div class="card animate-fade-in stagger-4">
         <h2>Overall Tamil Nadu Stats</h2>
         <div class="summary-grid">
             <div><span>Configured Trucks</span><strong id="tnConfiguredTrucks">0</strong></div>
@@ -35,29 +47,31 @@
             <div><span>Configured Mines</span><strong id="tnConfiguredMines">0</strong></div>
             <div><span>Active Trucks</span><strong id="tnActiveTrucks">0</strong></div>
         </div>
-        <div class="summary-grid" style="margin-top:8px;">
+        <div class="summary-grid" style="margin-top:12px;">
             <div><span>Overloads</span><strong id="tnOverloads">0</strong></div>
             <div><span>Avg Risk</span><strong id="tnAvgRisk">0</strong></div>
             <div><span>Avg Threat</span><strong id="tnAvgThreat">0</strong></div>
             <div><span>State</span><strong>Tamil Nadu</strong></div>
         </div>
     </div>
-    <div class="card">
-        <h2>Single Lorry Stats</h2>
+    <div class="card animate-fade-in stagger-5">
+        <h2>Single Lorry Inspection</h2>
         <label for="singleLorrySearchInput" class="muted">Search Lorry (example: truck_120 or 120)</label>
-        <div class="filter-bar" style="margin-top:8px;">
+        <div class="filter-bar" style="margin-top:10px;">
             <input id="singleLorrySearchInput" type="search" placeholder="Search by truck id" class="single-lorry-select" />
             <button id="singleLorrySearchBtn" type="button">Show</button>
             <button id="singleLorryClearBtn" type="button">Clear</button>
         </div>
-        <div id="singleLorryPanel" class="vehicle-meta single-lorry-panel" style="margin-top:10px;">Waiting for lorry data...</div>
+        <div id="singleLorryPanel" class="vehicle-meta single-lorry-panel" style="margin-top:12px;">
+            <div class="skeleton-loader"><div class="skeleton-text"></div><div class="skeleton-text" style="width: 80%"></div><div class="skeleton-text" style="width: 60%"></div></div>
+        </div>
     </div>
 </section>
 
-<section class="card">
+<section class="card animate-fade-in">
     <h2>District Stats (Tamil Nadu)</h2>
     <div id="districtPills" class="district-pill-list"></div>
-    <div class="scroll-box">
+    <div class="table-responsive">
         <table>
             <thead>
                 <tr>
@@ -69,13 +83,15 @@
                 </tr>
             </thead>
             <tbody id="districtStatsBody">
-                <tr><td colspan="5">Loading district stats...</td></tr>
+                <tr><td colspan="5"><div class="skeleton-loader skeleton-text"></div></td></tr>
+                <tr><td colspan="5"><div class="skeleton-loader skeleton-text"></div></td></tr>
+                <tr><td colspan="5"><div class="skeleton-loader skeleton-text"></div></td></tr>
             </tbody>
         </table>
     </div>
 </section>
 
-<section class="card">
+<section class="card animate-fade-in">
     <h2>Map and Heat Intelligence</h2>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -87,7 +103,7 @@
     <div id="map"></div>
 </section>
 
-<section class="card">
+<section class="card animate-fade-in">
     <h2>Vehicle Risk Board (paginated)</h2>
     <div class="filter-bar">
         <input id="lorrySearchInput" type="search" placeholder="Search truck, district, route, event..." />
@@ -95,17 +111,20 @@
         <button id="searchApplyBtn" type="button">Search</button>
         <button id="searchClearBtn" type="button">Clear</button>
     </div>
-    <div id="vehicleCards" class="vehicle-grid"></div>
+    <div id="vehicleCards" class="vehicle-grid">
+        <article class="vehicle-card"><div class="skeleton-loader skeleton-title"></div><div class="skeleton-loader skeleton-block"></div></article>
+        <article class="vehicle-card"><div class="skeleton-loader skeleton-title"></div><div class="skeleton-loader skeleton-block"></div></article>
+    </div>
     <div id="lorryPageControls" class="page-controls"></div>
 </section>
 
-<section class="card">
+<section class="card animate-fade-in">
     <h2>AI Prediction Stack</h2>
     <div class="grid two model-grid">
         <div class="model-panel">
             <h3>Classification Model</h3>
             <p class="muted">Predicts illegal behavior probability from GPS, route, trip, and risk signals.</p>
-            <div class="summary-grid">
+            <div class="summary-grid" style="margin-top:12px;">
                 <div><span>Tracked Vehicles</span><strong id="stackClassVehicles">0</strong></div>
                 <div><span>High Predictions</span><strong id="stackClassHigh">0</strong></div>
                 <div><span>Medium Predictions</span><strong id="stackClassMedium">0</strong></div>
@@ -115,7 +134,7 @@
         <div class="model-panel">
             <h3>Regression Model</h3>
             <p class="muted">Estimates truck load in tons and raises overload alerts when the limit is exceeded.</p>
-            <div class="summary-grid">
+            <div class="summary-grid" style="margin-top:12px;">
                 <div><span>Locked Weights</span><strong id="stackRegLocked">0</strong></div>
                 <div><span>Overloads</span><strong id="stackRegOverload">0</strong></div>
                 <div><span>Avg Weight</span><strong id="stackRegAvgWeight">0.0</strong></div>
@@ -125,7 +144,7 @@
     </div>
 </section>
 
-<section class="card">
+<section class="card animate-fade-in">
     <h2>Historical Risk Trend (SQLite)</h2>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <canvas id="riskHistoryChart" height="96"></canvas>

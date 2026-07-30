@@ -2,130 +2,241 @@
 {% block content %}
 <style>
     .hero-panel {
-        background: linear-gradient(180deg, rgba(8, 15, 28, 0.96), rgba(11, 23, 43, 0.92));
-        border: 1px solid rgba(148, 163, 184, 0.22);
-        box-shadow: 0 18px 50px rgba(2, 8, 23, 0.45);
-        border-radius: 18px;
-        padding: 40px;
+        background: linear-gradient(145deg, rgba(13, 19, 36, 0.92), rgba(6, 9, 19, 0.95)),
+                    radial-gradient(circle at top center, rgba(14, 165, 233, 0.15), transparent 70%);
+        border: 1px solid var(--border-accent);
+        box-shadow: var(--card-shadow), 0 0 40px rgba(14, 165, 233, 0.1);
+        border-radius: 24px;
+        padding: 48px 36px;
         text-align: center;
-        margin-bottom: 24px;
-        backdrop-filter: blur(12px);
+        margin-bottom: 28px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 14px;
+        border-radius: 20px;
+        background: rgba(14, 165, 233, 0.1);
+        border: 1px solid rgba(14, 165, 233, 0.25);
+        color: var(--accent-cyan);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        margin-bottom: 18px;
     }
     
     .hero-title {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 40px;
-        color: #e2e8f0;
+        font-family: var(--font-heading);
+        font-size: 2.8rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #ffffff 40%, #93c5fd 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         text-transform: uppercase;
-        margin-bottom: 15px;
-        letter-spacing: 0.06em;
+        margin-bottom: 16px;
+        letter-spacing: -0.5px;
+        line-height: 1.15;
     }
     
     .hero-subtitle {
-        font-size: 17px;
-        color: #cbd5e1;
-        max-width: 800px;
-        margin: 0 auto 30px;
+        font-size: 1.08rem;
+        color: var(--text-secondary);
+        max-width: 820px;
+        margin: 0 auto 32px;
         line-height: 1.6;
     }
 
+    .hero-cta-group {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+    }
+
     .enter-btn {
-        display: inline-block;
-        background: #1d4ed8;
-        color: #f8fafc;
-        font-size: 16px;
-        font-family: 'Orbitron', sans-serif;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+        color: #ffffff;
+        font-size: 0.95rem;
+        font-weight: 700;
+        font-family: var(--font-heading);
         text-decoration: none;
         padding: 14px 28px;
-        border-radius: 999px;
-        border: 1px solid rgba(59, 130, 246, 0.7);
-        box-shadow: 0 10px 24px rgba(29, 78, 216, 0.3);
-        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        border-radius: 14px;
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        box-shadow: 0 8px 25px rgba(2, 132, 199, 0.4);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .enter-btn:hover {
-        background: #2563eb;
-        box-shadow: 0 14px 28px rgba(37, 99, 235, 0.36);
-        transform: scale(1.05);
+        background: linear-gradient(135deg, #0ea5e9 0%, #1d4ed8 100%);
+        box-shadow: 0 12px 30px rgba(14, 165, 233, 0.55);
+        transform: translateY(-2px);
+        color: #ffffff;
+    }
+
+    .enter-btn.secondary {
+        background: rgba(15, 23, 42, 0.8);
+        border-color: rgba(13, 148, 136, 0.5);
+        color: #5eead4;
+        box-shadow: 0 8px 25px rgba(13, 148, 136, 0.2);
+    }
+
+    .enter-btn.secondary:hover {
+        background: rgba(15, 118, 110, 0.3);
+        border-color: #14b8a6;
+        color: #ffffff;
+        box-shadow: 0 12px 30px rgba(20, 184, 166, 0.35);
     }
 
     .grid-explain {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
-        margin-top: 30px;
-    }
-
-    .explain-card {
-        background: rgba(15, 23, 42, 0.88);
-        border: 1px solid rgba(148, 163, 184, 0.16);
-        border-radius: 14px;
-        padding: 25px;
+        margin-top: 36px;
         text-align: left;
     }
 
+    .explain-card {
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 28px;
+        backdrop-filter: blur(14px);
+        transition: all 0.3s ease;
+    }
+
+    .explain-card:hover {
+        transform: translateY(-2px);
+    }
+
     .crewmate-card {
-        border-left: 5px solid #16a34a;
+        border-left: 5px solid var(--accent-emerald);
     }
 
     .imposter-card {
-        border-left: 5px solid #dc2626;
+        border-left: 5px solid var(--accent-rose);
+    }
+
+    .card-title-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
     }
 
     .card-title {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 24px;
-        margin-bottom: 15px;
+        font-family: var(--font-heading);
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin: 0;
     }
 
     .crewmate-card .card-title { color: #4ade80; }
     .imposter-card .card-title { color: #f87171; }
 
+    .explain-card p {
+        color: var(--text-secondary);
+        font-size: 0.92rem;
+        margin-bottom: 16px;
+        line-height: 1.55;
+    }
+
     ul.task-list {
         list-style-type: none;
         padding: 0;
-        color: #dbe4f0;
+        color: var(--text-secondary);
+        font-size: 0.88rem;
         line-height: 1.8;
     }
 
+    ul.task-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 6px;
+    }
+
     ul.task-list li::before {
-        content: '► ';
-        color: #38bdf8;
-        font-size: 12px;
+        content: '►';
+        color: var(--accent-cyan);
+        font-size: 0.7rem;
+        margin-top: 4px;
+        flex-shrink: 0;
+    }
+
+    .imposter-card ul.task-list li::before {
+        color: var(--accent-rose);
+    }
+
+    @media (max-width: 992px) {
+        .grid-explain { grid-template-columns: 1fr; }
+        .hero-title { font-size: 2.1rem; }
+        .hero-panel { padding: 32px 20px; }
     }
 </style>
 
 <div class="hero-panel">
+    <span class="hero-badge">Autonomous Operations Command</span>
     <h1 class="hero-title">Tharani Sengol AI Operations Center</h1>
     <p class="hero-subtitle">
-        Tharani Sengol unifies live GPS monitoring, illegal mining detection, and truck load estimation in one formal control room.
-        The dashboard tracks route behavior, predicts future violations, and estimates vehicle weight without physical load sensors.
+        Unifying live GPS telemetry monitoring, anti-illegal mining detection, and load estimation into one central intelligence control room. Real-time route verification, automated anomaly classification, and instant threat scoring.
     </p>
     
-    <a href="{{ url_for('dashboard_page') }}" class="enter-btn">Enter Dashboard / Map</a>
-    <a href="{{ url_for('ai_prediction_page') }}" class="enter-btn" style="margin-left:12px;background:#0f766e;border-color:#14b8a6;box-shadow:0 10px 24px rgba(15,118,110,0.26)">Open AI Prediction</a>
+    <div class="hero-cta-group">
+        <a href="{{ url_for('dashboard_page') }}" class="enter-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
+            <span>Enter Live Map Dashboard</span>
+        </a>
+        <a href="{{ url_for('ai_prediction_page') }}" class="enter-btn secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span>Open AI Prediction Engine</span>
+        </a>
+    </div>
 
     <div class="grid-explain">
         <div class="explain-card crewmate-card">
-            <h2 class="card-title">COMPLIANT TRUCKS</h2>
-            <p>Approved fleet members follow route, permit, and telemetry rules with low risk exposure.</p>
+            <div class="card-title-wrap">
+                <h2 class="card-title">COMPLIANT TRUCKS</h2>
+                <span class="badge safe">Low Risk Profile</span>
+            </div>
+            <p>Approved fleet haulers adhering strictly to permitted mining corridors, digital transit passes, and operational guidelines.</p>
             <ul class="task-list">
-                <li>Stays precisely on designated Mine → Dump routes.</li>
-                <li>Maintains 100% active GPS tracking signals.</li>
-                <li>Performs an expected and regulated number of trips (1-7 operations).</li>
+                <li>Stays precisely on designated Mine → Dump transport corridors.</li>
+                <li>Maintains 100% active, uninterrupted GPS tracking signals.</li>
+                <li>Performs an expected and regulated number of trips (1-7 operations/day).</li>
                 <li>Risk Score is maintained solidly below 50.</li>
             </ul>
         </div>
 
         <div class="explain-card imposter-card">
-            <h2 class="card-title">HIGH-RISK TRUCKS</h2>
-            <p>Unregistered operations generate anomalies detected by the classification model and rule engine.</p>
+            <div class="card-title-wrap">
+                <h2 class="card-title">HIGH-RISK TRUCKS</h2>
+                <span class="badge danger">Critical Violation</span>
+            </div>
+            <p>Unregistered mineral movement flagged instantly by our automated classification model & geofence auditing engine.</p>
             <ul class="task-list">
                 <li>Intentionally deviates from approved routes (Off-grid movement).</li>
-                <li>Sabotages systems: Disables GPS connections randomly.</li>
-                <li>Performs continuous unaccounted trips exceeding daily limits.</li>
-                <li>Heatmap generation flags their coordinates in bright red.</li>
+                <li>Sabotages systems: Disables GPS telemetry connections periodically.</li>
+                <li>Performs continuous unaccounted trips exceeding daily quarry limits.</li>
+                <li>Heatmap engine flags coordinates in high-threat red clusters.</li>
             </ul>
         </div>
     </div>

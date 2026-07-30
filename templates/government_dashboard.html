@@ -1,22 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="card toolbar-card">
+<section class="card toolbar-card animate-fade-in stagger-1">
     <div>
         <h2>Government Compliance & Enforcement Center</h2>
         <p class="muted">Monitor legal boundaries, permit compliance, excavation quantities, and authenticate QR/RFID credentials.</p>
     </div>
     <div class="toolbar-actions">
-        <a class="btn-link" href="/export/alerts.csv">Export Compliance Alerts</a>
-        <a class="btn-link" href="/export/trips.csv">Export Transport Records</a>
+        <a class="btn-link" href="/export/alerts.csv">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Export Compliance Alerts
+        </a>
+        <a class="btn-link" href="/export/trips.csv">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Export Transport Records
+        </a>
     </div>
 </section>
 
 <!-- KPI Stats Row -->
-<section class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 12px;">
+<section class="summary-grid animate-fade-in stagger-2" style="margin-bottom: 20px;">
     <div class="card" style="margin-bottom: 0;">
         <h2>Registered Permits</h2>
         <div class="summary-grid" style="grid-template-columns: 1fr;">
-            <div style="background: rgba(47, 111, 237, 0.08); border-color: rgba(47, 111, 237, 0.3);">
+            <div style="background: rgba(14, 165, 233, 0.1); border-color: rgba(56, 189, 248, 0.3);">
                 <span>Total Active Permits</span>
                 <strong id="govActivePermits">0</strong>
             </div>
@@ -25,7 +31,7 @@
     <div class="card" style="margin-bottom: 0;">
         <h2>Permit Violations</h2>
         <div class="summary-grid" style="grid-template-columns: 1fr;">
-            <div style="background: rgba(217, 119, 6, 0.08); border-color: rgba(217, 119, 6, 0.3);">
+            <div style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3);">
                 <span>Active Infractions</span>
                 <strong id="govPermitViolations" class="muted">0</strong>
             </div>
@@ -34,7 +40,7 @@
     <div class="card" style="margin-bottom: 0;">
         <h2>Blacklisted Vehicles</h2>
         <div class="summary-grid" style="grid-template-columns: 1fr;">
-            <div style="background: rgba(220, 38, 38, 0.08); border-color: rgba(220, 38, 38, 0.3);">
+            <div style="background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.35);">
                 <span>Critical Risk Lorries</span>
                 <strong id="govBlacklistedCount">0</strong>
             </div>
@@ -43,7 +49,7 @@
     <div class="card" style="margin-bottom: 0;">
         <h2>Excavation Tracker</h2>
         <div class="summary-grid" style="grid-template-columns: 1fr;">
-            <div style="background: rgba(22, 163, 74, 0.08); border-color: rgba(22, 163, 74, 0.3);">
+            <div style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3);">
                 <span>Transported Quantity</span>
                 <strong id="govTotalQuantity">0.0 T</strong>
             </div>
@@ -54,36 +60,36 @@
 <!-- Main Workspace: Map and QR Scanner -->
 <section class="grid two">
     <!-- Geospatial Map Compliance -->
-    <div class="card">
+    <div class="card animate-fade-in stagger-3">
         <h2>Geo-Spatial Boundary Compliance</h2>
         <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
         <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-        <div class="heat-explain" style="margin-bottom: 10px;">
-            <span style="display:inline-block; width:12px; height:12px; background:rgba(220, 38, 38, 0.4); border:2px solid var(--danger); vertical-align:middle; margin-right:4px;"></span>
+        <div class="heat-explain" style="margin-bottom: 12px;">
+            <span style="display:inline-block; width:12px; height:12px; background:rgba(239, 68, 68, 0.4); border:2px solid var(--accent-rose); vertical-align:middle; margin-right:6px; border-radius:3px;"></span>
             <strong>Forbidden Geofences:</strong> Cauvery Basin and Pachaimalai Forest (Illegal Excavation Zones).
-            <span style="display:inline-block; width:12px; height:12px; background:rgba(47, 111, 237, 0.3); border:2px solid var(--accent); vertical-align:middle; margin-left:12px; margin-right:4px;"></span>
+            <span style="display:inline-block; width:12px; height:12px; background:rgba(14, 165, 233, 0.3); border:2px solid var(--accent-cyan); vertical-align:middle; margin-left:14px; margin-right:6px; border-radius:3px;"></span>
             <strong>Approved Zones:</strong> Mine and Dump areas per permit.
         </div>
-        <div id="govMap" style="width: 100%; height: 430px; border-radius: 12px; border: 1px solid rgba(148, 163, 184, 0.16);"></div>
+        <div id="govMap" style="width: 100%; height: 430px; border-radius: 16px; border: 1px solid var(--border-accent);"></div>
     </div>
 
     <!-- QR / RFID Checkpoint Scanner Terminal -->
-    <div class="card">
+    <div class="card animate-fade-in stagger-4">
         <h2>QR & RFID Checkpoint Terminal</h2>
         <p class="muted">Simulate mobile scanner validation or automatic RFID checkpoint cross for any active fleet lorry.</p>
         
-        <div class="filter-bar" style="margin-bottom: 12px;">
-            <input type="text" id="checkpointTruckSearch" list="checkpointTrucksList" placeholder="Search Lorry or Permit ID (e.g. truck_7)" style="width: 100%; min-height: 38px; padding: 0 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.2); color: var(--text);" />
+        <div class="filter-bar" style="margin-top: 14px; margin-bottom: 14px;">
+            <input type="text" id="checkpointTruckSearch" list="checkpointTrucksList" placeholder="Search Lorry or Permit ID (e.g. truck_7)" style="width: 100%;" />
             <datalist id="checkpointTrucksList"></datalist>
         </div>
 
-        <div class="grid two" style="margin-bottom: 12px; gap: 8px;">
-            <button id="checkpointQrBtn" type="button" class="btn" style="width: 100%;">View Permit & QR</button>
-            <button id="checkpointVerifyBtn" type="button" class="btn" style="width: 100%; background: var(--success); border-color: var(--success);">Scan QR Code</button>
+        <div class="grid two" style="margin-bottom: 12px; gap: 10px;">
+            <button id="checkpointQrBtn" type="button" style="width: 100%;">View Permit & QR</button>
+            <button id="checkpointVerifyBtn" type="button" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); border-color: #10b981;">Scan QR Code</button>
         </div>
-        <button id="checkpointRfidBtn" type="button" class="btn" style="width: 100%; margin-bottom: 12px; background: #7c3aed; border-color: #7c3aed;">Simulate RFID Crossing</button>
+        <button id="checkpointRfidBtn" type="button" style="width: 100%; margin-bottom: 14px; background: linear-gradient(135deg, #7c3aed, #6d28d9); border-color: #7c3aed;">Simulate RFID Crossing</button>
 
-        <div id="checkpointScanResult" class="single-lorry-panel" style="min-height: 240px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 12px;">
+        <div id="checkpointScanResult" class="single-lorry-panel" style="min-height: 240px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 16px;">
             <p class="muted">Select a lorry to generate its permit QR code and run compliance verification.</p>
         </div>
     </div>
@@ -92,10 +98,10 @@
 <!-- Compliance Violation Boards -->
 <section class="grid two">
     <!-- Inactive / Expired / Limit Exceeded Permits -->
-    <div class="card">
+    <div class="card animate-fade-in">
         <h2>Permit Compliance Infractions</h2>
         <p class="muted">Permits violating status, validity dates, trip counts, or tonnage limits.</p>
-        <div class="scroll-box" style="max-height: 300px;">
+        <div class="scroll-box table-responsive" style="max-height: 320px;">
             <table>
                 <thead>
                     <tr>
@@ -115,10 +121,10 @@
     </div>
 
     <!-- Illegal Trips / Geofence Breach Reports -->
-    <div class="card">
+    <div class="card animate-fade-in">
         <h2>Geofence & Compliance Violation Log</h2>
         <p class="muted">Real-time alerts for unauthorized zone entry, route deviation, and overloading.</p>
-        <div class="scroll-box" style="max-height: 300px;">
+        <div class="scroll-box table-responsive" style="max-height: 320px;">
             <table>
                 <thead>
                     <tr>
@@ -140,10 +146,10 @@
 <!-- Quantity limits and Blacklist -->
 <section class="grid two">
     <!-- Excavation Tonnage Tracking Board -->
-    <div class="card">
+    <div class="card animate-fade-in">
         <h2>Excavation Quantity Tracker</h2>
         <p class="muted">Real-time tonnage extracted by vehicle vs the permitted total limit.</p>
-        <div class="scroll-box" style="max-height: 300px;">
+        <div class="scroll-box table-responsive" style="max-height: 320px;">
             <table>
                 <thead>
                     <tr>
@@ -163,10 +169,10 @@
     </div>
 
     <!-- Blacklisted Vehicles -->
-    <div class="card">
+    <div class="card animate-fade-in">
         <h2>Suspicious & Blacklisted Fleet</h2>
         <p class="muted">Vehicles with high risk scores or repeated geofence and overloading infractions.</p>
-        <div class="scroll-box" style="max-height: 300px;">
+        <div class="scroll-box table-responsive" style="max-height: 320px;">
             <table>
                 <thead>
                     <tr>

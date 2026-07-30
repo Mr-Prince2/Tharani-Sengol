@@ -1,3 +1,4 @@
+let isFirstRiskChartRender = true;
 let riskChart = null;
 let violationChart = null;
 
@@ -46,16 +47,30 @@ async function renderRiskHistory() {
         riskChart.destroy();
     }
 
+    isFirstRiskChartRender = false;
     riskChart = new Chart(canvas.getContext('2d'), {
         type: 'line',
         data: { labels, datasets },
         options: {
+            animation: isFirstRiskChartRender ? { duration: 1000, easing: 'easeOutQuart' } : false,
             responsive: true,
-            scales: {
-                x: { ticks: { maxTicksLimit: 10 } },
-                y: { min: 0, max: 100 },
+            plugins: {
+                legend: { position: 'top', labels: { color: '#cbd5e1' } },
+                tooltip: { mode: 'index', intersect: false }
             },
-            plugins: { legend: { display: true } },
+            scales: {
+                x: { 
+                    title: { display: true, text: 'Time', color: '#94a3b8' },
+                    ticks: { maxTicksLimit: 10, color: '#64748b' },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                },
+                y: { 
+                    min: 0, max: 100,
+                    title: { display: true, text: 'Risk Score (0-100)', color: '#94a3b8' },
+                    ticks: { color: '#64748b' },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                },
+            },
         },
     });
 }
@@ -74,6 +89,7 @@ async function renderViolationRate() {
         violationChart.destroy();
     }
 
+    isFirstRiskChartRender = false;
     violationChart = new Chart(canvas.getContext('2d'), {
         data: {
             labels,
@@ -99,10 +115,24 @@ async function renderViolationRate() {
             ],
         },
         options: {
+            animation: isFirstRiskChartRender ? { duration: 1000, easing: 'easeOutQuart' } : false,
             responsive: true,
+            plugins: {
+                legend: { position: 'top', labels: { color: '#cbd5e1' } },
+                tooltip: { mode: 'index', intersect: false }
+            },
             scales: {
-                x: { ticks: { maxTicksLimit: 12 } },
-                y: { beginAtZero: true },
+                x: { 
+                    title: { display: true, text: 'Time', color: '#94a3b8' },
+                    ticks: { maxTicksLimit: 12, color: '#64748b' },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                },
+                y: { 
+                    beginAtZero: true,
+                    title: { display: true, text: 'Number of Violations', color: '#94a3b8' },
+                    ticks: { color: '#64748b' },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                },
             },
         },
     });
