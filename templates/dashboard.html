@@ -14,14 +14,14 @@
     <!-- Unified KPIs Row -->
     <section class="bento-card bento-kpis animate-fade-in stagger-2">
         <div class="kpi-grid">
-            <div class="kpi-item"><span>Active Vehicles</span><strong id="vehicleCount">0</strong></div>
-            <div class="kpi-item"><span>Total Trips</span><strong id="tripCount">0</strong></div>
-            <div class="kpi-item"><span>Dangerous</span><strong id="dangerCount">0</strong></div>
-            <div class="kpi-item"><span>Suspicious</span><strong id="suspiciousCount">0</strong></div>
-            <div class="kpi-item"><span>Avg Risk</span><strong id="tnAvgRisk">0</strong></div>
-            <div class="kpi-item"><span>Avg Threat</span><strong id="tnAvgThreat">0</strong></div>
-            <div class="kpi-item"><span>Configured Mines</span><strong id="tnConfiguredMines">0</strong></div>
-            <div class="kpi-item"><span>Overloads</span><strong id="tnOverloads">0</strong></div>
+            <div class="kpi-item"><span>Active Vehicles</span><strong id="vehicleCount"><span class="skeleton-loader skeleton-kpi"></span></strong></div>
+            <div class="kpi-item"><span>Total Trips</span><strong id="tripCount"><span class="skeleton-loader skeleton-kpi"></span></strong></div>
+            <div class="kpi-item"><span>Dangerous</span><strong id="dangerCount"><span class="skeleton-loader skeleton-kpi"></span></strong></div>
+            <div class="kpi-item"><span>Suspicious</span><strong id="suspiciousCount"><span class="skeleton-loader skeleton-kpi"></span></strong></div>
+            <div class="kpi-item"><span>Avg Risk</span><strong id="tnAvgRisk"><span class="skeleton-loader skeleton-kpi"></span></strong></div>
+            <div class="kpi-item"><span>Avg Threat</span><strong id="tnAvgThreat"><span class="skeleton-loader skeleton-kpi"></span></strong></div>
+            <div class="kpi-item"><span>Configured Mines</span><strong id="tnConfiguredMines"><span class="skeleton-loader skeleton-kpi"></span></strong></div>
+            <div class="kpi-item"><span>Overloads</span><strong id="tnOverloads"><span class="skeleton-loader skeleton-kpi"></span></strong></div>
         </div>
         <!-- Hidden elements for backward compatibility with dashboard.js -->
         <div style="display:none;">
@@ -43,9 +43,19 @@
     
     <section class="bento-card bento-alerts animate-fade-in stagger-4">
         <h2>Live Alerts</h2>
-        <div id="alertFeed" class="scroll-box" style="max-height: 400px;">
-            <div class="alert-item"><div class="skeleton-loader skeleton-text"></div></div>
-            <div class="alert-item"><div class="skeleton-loader skeleton-text"></div></div>
+        <div id="alertFeed" class="scroll-box" style="max-height: 400px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="alert-item" style="padding: 10px; border-bottom: 1px solid var(--border-subtle);">
+                <div class="skeleton-loader skeleton-badge" style="margin-bottom: 6px;"></div>
+                <div class="skeleton-loader skeleton-text"></div>
+            </div>
+            <div class="alert-item" style="padding: 10px; border-bottom: 1px solid var(--border-subtle);">
+                <div class="skeleton-loader skeleton-badge" style="margin-bottom: 6px;"></div>
+                <div class="skeleton-loader skeleton-text medium"></div>
+            </div>
+            <div class="alert-item" style="padding: 10px; border-bottom: 1px solid var(--border-subtle);">
+                <div class="skeleton-loader skeleton-badge" style="margin-bottom: 6px;"></div>
+                <div class="skeleton-loader skeleton-text short"></div>
+            </div>
         </div>
     </section>
 
@@ -58,7 +68,11 @@
             <button id="singleLorryClearBtn" type="button">Clear</button>
         </div>
         <div id="singleLorryPanel" class="vehicle-meta single-lorry-panel" style="margin-top:12px;">
-            <div class="skeleton-loader"><div class="skeleton-text"></div><div class="skeleton-text" style="width: 80%"></div></div>
+            <div class="skeleton-card" style="border:none; padding:8px;">
+                <div class="skeleton-loader skeleton-title"></div>
+                <div class="skeleton-loader skeleton-text medium"></div>
+                <div class="skeleton-loader skeleton-text short"></div>
+            </div>
         </div>
     </section>
 
@@ -106,7 +120,9 @@
                     </tr>
                 </thead>
                 <tbody id="districtStatsBody">
-                    <tr><td colspan="5"><div class="skeleton-loader skeleton-text"></div></td></tr>
+                    <tr><td colspan="5"><div class="skeleton-loader skeleton-text" style="margin: 8px 0;"></div></td></tr>
+                    <tr><td colspan="5"><div class="skeleton-loader skeleton-text medium" style="margin: 8px 0;"></div></td></tr>
+                    <tr><td colspan="5"><div class="skeleton-loader skeleton-text short" style="margin: 8px 0;"></div></td></tr>
                 </tbody>
             </table>
         </div>
@@ -122,7 +138,42 @@
             <button id="searchClearBtn" type="button">Clear</button>
         </div>
         <div id="vehicleCards" class="vehicle-grid" style="margin-top: 15px;">
-            <article class="vehicle-card"><div class="skeleton-loader skeleton-title"></div><div class="skeleton-loader skeleton-block"></div></article>
+            <div class="skeleton-card">
+                <div class="skeleton-loader skeleton-title"></div>
+                <div class="skeleton-loader skeleton-text"></div>
+                <div class="skeleton-loader skeleton-text short"></div>
+                <div class="skeleton-loader skeleton-badge"></div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-loader skeleton-title"></div>
+                <div class="skeleton-loader skeleton-text"></div>
+                <div class="skeleton-loader skeleton-text short"></div>
+                <div class="skeleton-loader skeleton-badge"></div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-loader skeleton-title"></div>
+                <div class="skeleton-loader skeleton-text"></div>
+                <div class="skeleton-loader skeleton-text short"></div>
+                <div class="skeleton-loader skeleton-badge"></div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-loader skeleton-title"></div>
+                <div class="skeleton-loader skeleton-text"></div>
+                <div class="skeleton-loader skeleton-text short"></div>
+                <div class="skeleton-loader skeleton-badge"></div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-loader skeleton-title"></div>
+                <div class="skeleton-loader skeleton-text"></div>
+                <div class="skeleton-loader skeleton-text short"></div>
+                <div class="skeleton-loader skeleton-badge"></div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-loader skeleton-title"></div>
+                <div class="skeleton-loader skeleton-text"></div>
+                <div class="skeleton-loader skeleton-text short"></div>
+                <div class="skeleton-loader skeleton-badge"></div>
+            </div>
         </div>
         <div id="lorryPageControls" class="page-controls"></div>
     </section>
@@ -147,5 +198,5 @@
     </div>
 </dialog>
 
-<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='dashboard.js') }}?v=101"></script>
 {% endblock %}

@@ -5,14 +5,26 @@ import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const MapPlaceholder = () => (
-  <div className="w-full h-full min-h-[400px] bg-[#121826] rounded-xl flex flex-col items-center justify-center border border-[#ffffff14]">
-    <div className="w-12 h-12 border-4 border-[var(--brand)] border-t-transparent rounded-full animate-spin mb-4"></div>
-    <p className="text-[#5f6b85]">Interactive 3D Map Rendering (React Three Fiber)</p>
+  <div className="w-full h-full min-h-[400px] bg-[#111728] rounded-xl flex flex-col items-center justify-center border border-[#ffffff14] relative overflow-hidden">
+    <div className="w-12 h-12 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+    <p className="text-slate-400 font-medium text-sm">Initializing Geospatial Telemetry Engine...</p>
+  </div>
+);
+
+const SkeletonKPI = () => (
+  <div className="h-10 w-16 bg-[#1c253d] rounded animate-pulse mt-1"></div>
+);
+
+const SkeletonAlert = () => (
+  <div className="p-3 bg-[#111728] rounded-lg border border-[#ffffff14] space-y-2 animate-pulse">
+    <div className="h-4 w-20 bg-[#1c253d] rounded"></div>
+    <div className="h-3 w-full bg-[#1c253d] rounded"></div>
   </div>
 );
 
 export default function Dashboard() {
   const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,6 +36,8 @@ export default function Dashboard() {
         }
       } catch (e) {
         console.error(e);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -47,39 +61,23 @@ export default function Dashboard() {
         <section className="bento-card bento-actions">
           <div className="flex items-center gap-4">
             <strong className="text-[var(--text-primary)]">Exports:</strong>
-            <button className="flex items-center gap-2 text-sm text-[var(--brand)] hover:text-white transition-colors"><Download size={14}/> Alerts</button>
-            <button className="flex items-center gap-2 text-sm text-[var(--brand)] hover:text-white transition-colors"><Download size={14}/> Violations</button>
-            <button className="flex items-center gap-2 text-sm text-[var(--brand)] hover:text-white transition-colors"><Download size={14}/> Trips</button>
+            <button className="flex items-center gap-2 text-sm text-sky-400 hover:text-white transition-colors"><Download size={14}/> Alerts</button>
+            <button className="flex items-center gap-2 text-sm text-sky-400 hover:text-white transition-colors"><Download size={14}/> Violations</button>
+            <button className="flex items-center gap-2 text-sm text-sky-400 hover:text-white transition-colors"><Download size={14}/> Trips</button>
           </div>
         </section>
 
         {/* Unified KPIs Row */}
         <section className="bento-card bento-kpis">
           <div className="kpi-grid">
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.1 }} className="kpi-item">
-              <span>Active Vehicles</span><strong>{stats.active_trucks || 0}</strong>
-            </motion.div>
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.2 }} className="kpi-item">
-              <span>Total Trips</span><strong>{sys.total_trips || 0}</strong>
-            </motion.div>
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.3 }} className="kpi-item">
-              <span>Dangerous</span><strong className="text-red-400">{sys.danger_count || 0}</strong>
-            </motion.div>
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.4 }} className="kpi-item">
-              <span>Suspicious</span><strong className="text-yellow-400">{sys.suspicious_count || 0}</strong>
-            </motion.div>
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.5 }} className="kpi-item">
-              <span>Avg Risk</span><strong>{(stats.avg_risk || 0).toFixed(1)}</strong>
-            </motion.div>
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.6 }} className="kpi-item">
-              <span>Avg Threat</span><strong>{(stats.avg_threat || 0).toFixed(1)}</strong>
-            </motion.div>
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.7 }} className="kpi-item">
-              <span>Configured Mines</span><strong>{stats.configured_mines || 0}</strong>
-            </motion.div>
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.8 }} className="kpi-item">
-              <span>Overloads</span><strong>{stats.overloads || 0}</strong>
-            </motion.div>
+            <div className="kpi-item"><span>Active Vehicles</span>{loading ? <SkeletonKPI /> : <strong>{stats.active_trucks || 0}</strong>}</div>
+            <div className="kpi-item"><span>Total Trips</span>{loading ? <SkeletonKPI /> : <strong>{sys.total_trips || 0}</strong>}</div>
+            <div className="kpi-item"><span>Dangerous</span>{loading ? <SkeletonKPI /> : <strong className="text-rose-400">{sys.danger_count || 0}</strong>}</div>
+            <div className="kpi-item"><span>Suspicious</span>{loading ? <SkeletonKPI /> : <strong className="text-amber-400">{sys.suspicious_count || 0}</strong>}</div>
+            <div className="kpi-item"><span>Avg Risk</span>{loading ? <SkeletonKPI /> : <strong>{(stats.avg_risk || 0).toFixed(1)}</strong>}</div>
+            <div className="kpi-item"><span>Avg Threat</span>{loading ? <SkeletonKPI /> : <strong>{(stats.avg_threat || 0).toFixed(1)}</strong>}</div>
+            <div className="kpi-item"><span>Configured Mines</span>{loading ? <SkeletonKPI /> : <strong>{stats.configured_mines || 0}</strong>}</div>
+            <div className="kpi-item"><span>Overloads</span>{loading ? <SkeletonKPI /> : <strong>{stats.overloads || 0}</strong>}</div>
           </div>
         </section>
 
@@ -96,22 +94,30 @@ export default function Dashboard() {
         <section className="bento-card bento-alerts flex flex-col">
           <h2>Live Alerts</h2>
           <div className="flex-1 overflow-y-auto space-y-3">
-             {data?.latest_alerts?.slice(0, 5).map((alert: any, i: number) => (
-               <motion.div 
-                 initial={{ opacity: 0, x: 20 }}
-                 animate={{ opacity: 1, x: 0 }}
-                 transition={{ delay: i * 0.1 }}
-                 key={i} 
-                 className="p-3 bg-[#121826] rounded-lg border border-[#ffffff14]"
-               >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className={	ext-xs font-bold }>
-                      {alert.risk_level}
-                    </span>
-                  </div>
-                  <p className="text-sm">{alert.event_summary || Vehicle  exceeded thresholds.}</p>
-               </motion.div>
-             )) || <p className="text-sm text-gray-500">Waiting for alerts...</p>}
+             {loading ? (
+               <>
+                 <SkeletonAlert />
+                 <SkeletonAlert />
+                 <SkeletonAlert />
+               </>
+             ) : (
+               data?.latest_alerts?.slice(0, 5).map((alert: any, i: number) => (
+                 <motion.div 
+                   initial={{ opacity: 0, x: 20 }}
+                   animate={{ opacity: 1, x: 0 }}
+                   transition={{ delay: i * 0.1 }}
+                   key={i} 
+                   className="p-3 bg-[#111728] rounded-lg border border-[#ffffff14]"
+                 >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-bold text-sky-400">
+                        {alert.risk_level}
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-300">{alert.event_summary || 'Vehicle threshold alert registered.'}</p>
+                 </motion.div>
+               )) || <p className="text-sm text-slate-500">Waiting for alerts...</p>
+             )}
           </div>
         </section>
 
@@ -119,14 +125,14 @@ export default function Dashboard() {
         <section className="bento-card bento-ai">
           <h2>AI Prediction Stack</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-[#121826] p-4 rounded-xl border border-[#ffffff14]">
+            <div className="bg-[#111728] p-4 rounded-xl border border-[#ffffff14]">
               <h3 className="text-lg font-bold mb-3">Classification</h3>
               <div className="kpi-grid">
                 <div className="kpi-item"><span>High Prob</span><strong>{prediction.class_high || 0}</strong></div>
                 <div className="kpi-item"><span>Avg Prob</span><strong>{(prediction.class_avg_prob || 0).toFixed(1)}%</strong></div>
               </div>
             </div>
-            <div className="bg-[#121826] p-4 rounded-xl border border-[#ffffff14]">
+            <div className="bg-[#111728] p-4 rounded-xl border border-[#ffffff14]">
               <h3 className="text-lg font-bold mb-3">Regression</h3>
               <div className="kpi-grid">
                 <div className="kpi-item"><span>Locked</span><strong>{prediction.reg_locked || 0}</strong></div>

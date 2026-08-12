@@ -793,13 +793,66 @@ tr:hover td {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Skeleton Loaders */
+/* Skeleton Loaders & Shimmer Effects */
 .skeleton-loader {
   background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-card-hover) 50%, var(--bg-surface) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite linear;
+  border-radius: var(--radius-sm);
+  display: block;
+}
+
+.skeleton-text {
+  height: 14px;
+  width: 100%;
+  margin-bottom: 8px;
   border-radius: 4px;
-  height: 20px;
+}
+
+.skeleton-text.short { width: 40%; }
+.skeleton-text.medium { width: 70%; }
+
+.skeleton-title {
+  height: 24px;
+  width: 60%;
+  margin-bottom: 12px;
+  border-radius: 6px;
+}
+
+.skeleton-kpi {
+  height: 38px;
+  width: 80px;
+  margin-top: 4px;
+  border-radius: 6px;
+}
+
+.skeleton-badge {
+  height: 22px;
+  width: 76px;
+  border-radius: var(--radius-pill);
+}
+
+.skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.skeleton-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-row {
+  height: 42px;
+  width: 100%;
+  border-radius: 6px;
+  margin-bottom: 6px;
 }
 
 @keyframes shimmer {
