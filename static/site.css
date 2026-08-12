@@ -3,7 +3,7 @@
    Full Design System with Dark & Light Theme Engines + Responsive Layouts
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
 /* ==========================================================================
    Root CSS Variables & Theme Engine
@@ -12,18 +12,18 @@
 :root {
   color-scheme: dark light;
   
-  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-heading: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  --font-sans: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: 'Orbitron', 'Outfit', 'Plus Jakarta Sans', sans-serif;
 
-  /* Default Executive Dark Mode Color Tokens */
-  --bg-canvas: #0a0e1a;
-  --bg-sidebar: #0f1424;
-  --bg-card: #141b2d;
-  --bg-card-hover: #1c253d;
-  --bg-surface: #111728;
-  --bg-input: #0d1220;
-  --bg-header: rgba(15, 20, 36, 0.94);
-  --bg-modal: #131a2c;
+  /* Default Command Center Dark Theme (#0f172a to #1e293b) */
+  --bg-canvas: #0f172a;
+  --bg-sidebar: #1e293b;
+  --bg-card: #1e293b;
+  --bg-card-hover: #334155;
+  --bg-surface: #0f172a;
+  --bg-input: #0f172a;
+  --bg-header: rgba(30, 41, 59, 0.94);
+  --bg-modal: #1e293b;
 
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-card: rgba(56, 189, 248, 0.14);
