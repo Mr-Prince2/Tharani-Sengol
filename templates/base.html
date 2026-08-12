@@ -25,11 +25,29 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}?v=100" />
 </head>
 <body>
+
+<!-- Official Futuristic Government Classification Header Bar -->
+<div class="gov-official-banner">
+    <div class="gov-banner-container">
+        <div class="gov-banner-left">
+            <div class="gov-emblem-badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+            </div>
+            <span class="gov-dept-name">GOVERNMENT OF TAMIL NADU • DEPARTMENT OF GEOLOGY & MINING</span>
+            <span class="gov-clearance-pill"><span class="pulse-dot red"></span> RESTRICTED / OFFICIAL USE ONLY</span>
+        </div>
+        <div class="gov-banner-right">
+            <span class="gov-status-item"><span class="status-indicator-dot safe"></span> SAT-LINK: ACTIVE</span>
+            <span class="gov-status-item"><span class="status-indicator-dot safe"></span> AES-256 ENCRYPTED</span>
+            <span id="govSystemClock" class="gov-clock">IST --:--:--</span>
+        </div>
+    </div>
+</div>
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -269,6 +287,18 @@
     if (sidebarOverlay) {
         sidebarOverlay.addEventListener('click', () => toggleMobileDrawer(false));
     }
+
+    // Live Government Intelligence Clock
+    function updateGovClock() {
+        const clockEl = document.getElementById('govSystemClock');
+        if (!clockEl) return;
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { hour12: false, timeZone: 'Asia/Kolkata' });
+        const dateStr = now.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+        clockEl.textContent = `IST ${timeStr} • ${dateStr}`;
+    }
+    updateGovClock();
+    setInterval(updateGovClock, 1000);
 </script>
 
 <script src="{{ url_for('static', filename='auth.js') }}?v=102"></script>

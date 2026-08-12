@@ -12,58 +12,152 @@
 :root {
   color-scheme: dark light;
   
-  --font-sans: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-heading: 'Orbitron', 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
-  /* Default Command Center Dark Theme (#0f172a to #1e293b) */
-  --bg-canvas: #0f172a;
-  --bg-sidebar: #1e293b;
-  --bg-card: #1e293b;
-  --bg-card-hover: #334155;
-  --bg-surface: #0f172a;
-  --bg-input: #0f172a;
-  --bg-header: rgba(30, 41, 59, 0.94);
-  --bg-modal: #1e293b;
+  /* Default Command Center Dark Theme (#030712 to #0a1128) */
+  --bg-canvas: #040814;
+  --bg-sidebar: rgba(8, 14, 30, 0.92);
+  --bg-card: rgba(11, 20, 42, 0.82);
+  --bg-card-hover: rgba(18, 32, 64, 0.92);
+  --bg-surface: #070d1e;
+  --bg-input: #050a17;
+  --bg-header: rgba(6, 12, 26, 0.95);
+  --bg-modal: #0b142c;
 
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-card: rgba(56, 189, 248, 0.14);
-  --border-focus: #38bdf8;
-  --border-accent: rgba(56, 189, 248, 0.28);
+  --border-subtle: rgba(0, 240, 255, 0.12);
+  --border-card: rgba(0, 240, 255, 0.22);
+  --border-focus: #00f0ff;
+  --border-accent: rgba(0, 240, 255, 0.38);
 
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   --text-dim: #475569;
-  --text-inverse: #0f172a;
+  --text-inverse: #030712;
 
-  --accent-cyan: #38bdf8;
+  --accent-cyan: #00f0ff;
   --accent-blue: #3b82f6;
   --accent-emerald: #10b981;
-  --accent-amber: #f59e0b;
-  --accent-rose: #f43f5e;
+  --accent-amber: #ffb703;
+  --accent-rose: #ff0055;
   --accent-purple: #a855f7;
-  --accent-gradient: linear-gradient(135deg, #0284c7 0%, #3b82f6 100%);
-  --accent-glow: rgba(14, 165, 233, 0.28);
+  --accent-gradient: linear-gradient(135deg, #0284c7 0%, #00f0ff 100%);
+  --accent-glow: rgba(0, 240, 255, 0.35);
 
-  --status-safe-bg: rgba(16, 185, 129, 0.14);
+  --gov-gold: #fbbf24;
+  --gov-gold-glow: rgba(251, 191, 36, 0.3);
+
+  --status-safe-bg: rgba(16, 185, 129, 0.16);
   --status-safe-color: #34d399;
-  --status-warning-bg: rgba(245, 158, 11, 0.14);
-  --status-warning-color: #fbbf24;
-  --status-danger-bg: rgba(244, 63, 94, 0.16);
-  --status-danger-color: #fb7185;
+  --status-warning-bg: rgba(255, 183, 3, 0.16);
+  --status-warning-color: #ffb703;
+  --status-danger-bg: rgba(255, 0, 85, 0.18);
+  --status-danger-color: #ff0055;
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.55);
-  --glass-backdrop: blur(14px);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 16px 48px rgba(0, 240, 255, 0.15);
+  --glass-backdrop: blur(18px);
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
   --radius-pill: 9999px;
 
-  --sidebar-width: 260px;
+  --sidebar-width: 270px;
   --header-height: 64px;
+}
+
+/* ==========================================================================
+   Futuristic Government Header & Classification Banner
+   ========================================================================== */
+
+.gov-official-banner {
+  background: linear-gradient(90deg, #020612 0%, #081229 50%, #020612 100%);
+  border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+  padding: 6px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0, 0, 255, 0.2);
+}
+
+.gov-banner-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1800px;
+  margin: 0 auto;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.gov-banner-left, .gov-banner-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.gov-emblem-badge {
+  color: var(--gov-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.6));
+}
+
+.gov-dept-name {
+  color: #e2e8f0;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.gov-clearance-pill {
+  background: rgba(255, 0, 85, 0.18);
+  border: 1px solid rgba(255, 0, 85, 0.5);
+  color: #ff4d7d;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gov-status-item {
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gov-clock {
+  color: var(--accent-cyan);
+  font-weight: 700;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+}
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff0055;
+  box-shadow: 0 0 8px #ff0055;
+  animation: pulseGlow 1.5s infinite ease-in-out;
+}
+.pulse-dot.safe { background: #10b981; box-shadow: 0 0 8px #10b981; }
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
 }
 
 /* Light Mode Overrides */
@@ -515,15 +609,14 @@ a:hover {
   font-family: var(--font-heading);
 }
 
-/* Buttons & Controls */
 button, .btn-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 18px;
+  padding: 8px 16px;
   border-radius: var(--radius-sm);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -531,19 +624,20 @@ button, .btn-link {
   font-family: inherit;
 }
 
-button {
-  background: var(--accent-gradient);
+button, .btn-primary {
+  background: linear-gradient(135deg, #0284c7 0%, #00b4d8 100%);
   color: #ffffff;
-  box-shadow: 0 2px 10px var(--accent-glow);
+  box-shadow: 0 2px 10px rgba(0, 180, 216, 0.25);
+  border: 1px solid rgba(0, 240, 255, 0.3);
 }
 
-button:hover {
+button:hover, .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px var(--accent-glow);
+  box-shadow: 0 4px 16px rgba(0, 240, 255, 0.4);
   filter: brightness(1.08);
 }
 
-button:active {
+button:active, .btn-primary:active {
   transform: translateY(0);
 }
 
@@ -551,6 +645,7 @@ button:active {
   background: var(--bg-surface);
   border-color: var(--border-subtle);
   color: var(--text-primary);
+  box-shadow: none;
 }
 
 .btn-link:hover {
@@ -558,6 +653,49 @@ button:active {
   border-color: var(--border-focus);
   color: var(--accent-cyan);
   text-decoration: none;
+}
+
+/* Sleek District Pills Container & Badges */
+.district-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+  max-height: 120px;
+  overflow-y: auto;
+  padding: 4px 2px;
+}
+
+.district-pill {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #94a3b8 !important;
+  font-size: 0.76rem !important;
+  font-weight: 500 !important;
+  padding: 4px 11px !important;
+  border-radius: 20px !important;
+  cursor: pointer;
+  transition: all 0.2s ease !important;
+  box-shadow: none !important;
+  transform: none !important;
+  white-space: nowrap;
+}
+
+.district-pill:hover {
+  background: rgba(0, 240, 255, 0.12) !important;
+  border-color: rgba(0, 240, 255, 0.4) !important;
+  color: #ffffff !important;
+  transform: none !important;
+  filter: none !important;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.2) !important;
+}
+
+.district-pill.active {
+  background: rgba(0, 240, 255, 0.2) !important;
+  border: 1px solid var(--accent-cyan) !important;
+  color: #00f0ff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.3) !important;
 }
 
 /* Form Controls & Inputs */
