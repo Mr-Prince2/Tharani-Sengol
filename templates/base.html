@@ -178,6 +178,71 @@
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
     
+<!-- Global Floating Command Bar Palette Overlay (Ctrl + K) -->
+<div id="commandPaletteBackdrop" class="command-palette-backdrop">
+    <div class="command-palette-modal">
+        <div class="command-palette-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input id="cmdSearchInput" type="text" placeholder="Search truck reg #, permit ID, district, or route..." autocomplete="off" />
+            <kbd style="background:var(--bg-surface); padding:2px 8px; border-radius:4px; font-size:0.75rem; border:1px solid var(--border-subtle); color:var(--text-muted);">ESC</kbd>
+        </div>
+        <div id="cmdSearchResults" class="command-palette-results">
+            <div class="command-palette-item" onclick="location.href='/dashboard'">
+                <span>📊 Live Dashboard Overview</span>
+                <span class="muted" style="font-size:0.75rem;">Jump to Live Map</span>
+            </div>
+            <div class="command-palette-item" onclick="location.href='/government-dashboard'">
+                <span>⚖️ Government Compliance & QR Terminal</span>
+                <span class="muted" style="font-size:0.75rem;">Jump to Enforcement</span>
+            </div>
+            <div class="command-palette-item" onclick="location.href='/vehicles'">
+                <span>🚛 Vehicle Fleet Management</span>
+                <span class="muted" style="font-size:0.75rem;">Active Fleet</span>
+            </div>
+            <div class="command-palette-item" onclick="location.href='/alerts'">
+                <span>🚨 Critical Anomaly Alert Stream</span>
+                <span class="muted" style="font-size:0.75rem;">System Alerts</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const cmdBackdrop = document.getElementById('commandPaletteBackdrop');
+    const cmdInput = document.getElementById('cmdSearchInput');
+    
+    function toggleCommandPalette(show) {
+        if (!cmdBackdrop) return;
+        if (show) {
+            cmdBackdrop.classList.add('active');
+            if (cmdInput) { cmdInput.focus(); cmdInput.value = ''; }
+        } else {
+            cmdBackdrop.classList.remove('active');
+        }
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            const isActive = cmdBackdrop && cmdBackdrop.classList.contains('active');
+            toggleCommandPalette(!isActive);
+        } else if (e.key === 'Escape' && cmdBackdrop && cmdBackdrop.classList.contains('active')) {
+            toggleCommandPalette(false);
+        }
+    });
+
+    if (cmdBackdrop) {
+        cmdBackdrop.addEventListener('click', (e) => {
+            if (e.target === cmdBackdrop) toggleCommandPalette(false);
+        });
+    }
+
     function toggleMobileDrawer(open) {
         if (!sidebar) return;
         if (open) {
@@ -206,7 +271,7 @@
     }
 </script>
 
-<script src="{{ url_for('static', filename='auth.js') }}?v=3"></script>
-<script src="{{ url_for('static', filename='chatbot.js') }}?v=3"></script>
+<script src="{{ url_for('static', filename='auth.js') }}?v=102"></script>
+<script src="{{ url_for('static', filename='chatbot.js') }}?v=102"></script>
 </body>
 </html>

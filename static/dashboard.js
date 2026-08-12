@@ -204,15 +204,29 @@ function renderAlerts(alerts) {
 async function showRiskExplain(vehicleId) {
     const response = await fetch(`/api/vehicle/${vehicleId}/explain`);
     const details = await response.json();
+    const probPct = Math.round((details.prediction?.probability || 0) * 100);
+    const weightVal = Number(details.weight_prediction?.predicted_weight || 0).toFixed(1);
+    const isOverload = Boolean(details.weight_prediction?.overload_flag);
 
-    document.getElementById('explainTitle').textContent = `${vehicleId} Risk Explanation`;
-    document.getElementById('explainSummary').textContent = `Risk ${details.risk} (${details.risk_level}), prediction ${formatPredictionLabel(details.prediction.label)} (${Math.round((details.prediction.probability || 0) * 100)}%), weight ${Number(details.weight_prediction?.predicted_weight || 0).toFixed(1)} tons, overload ${details.weight_prediction?.overload_flag ? 'YES' : 'NO'}. ${details.prediction.reason}`;
+    document.getElementById('explainTitle').textContent = `${vehicleId} XAI Risk Analysis`;
+    document.getElementById('explainSummary').innerHTML = `
+        <div class="xai-card">
+            <div class="xai-header">
+                <strong>ML Confidence Score: ${probPct}% (${details.risk_level})</strong>
+                <span class="badge ${details.risk >= 80 ? 'danger' : (details.risk >= 50 ? 'suspicious' : 'safe')}"><span class="badge-dot"></span>Risk ${details.risk}</span>
+            </div>
+            <div class="xai-progress-track">
+                <div class="xai-progress-bar" style="width: ${probPct}%; background: ${details.risk >= 80 ? '#ef4444' : (details.risk >= 50 ? '#f59e0b' : '#10b981')}"></div>
+            </div>
+            <p style="margin-bottom:10px; font-size:0.88rem;"><strong>Load Assessment:</strong> Estimated ${weightVal} tons (Allowed: 20.0 tons) — ${isOverload ? '🔴 Overload Flagged' : '🟢 Within Permit Threshold'}.</p>
+        </div>
+    `;
     document.getElementById('heatHelp').textContent = details.how_heatmap_works;
 
     const riskList = document.getElementById('riskReasonsList');
     const safeList = document.getElementById('safeReasonsList');
-    riskList.innerHTML = (details.risk_reasons || []).map(item => `<li>${item.reason} (+${item.points}) at ${formatTs(item.time)}</li>`).join('') || '<li>No recent risk triggers</li>';
-    safeList.innerHTML = (details.safe_reasons || []).map(item => `<li>${item}</li>`).join('') || '<li>No safe signals identified</li>';
+    riskList.innerHTML = (details.risk_reasons || []).map(item => `<li class="xai-factor-item"><span>${item.reason} (+${item.points} pts) at ${formatTs(item.time)}</span></li>`).join('') || '<li class="xai-factor-item"><span>No critical risk triggers detected</span></li>';
+    safeList.innerHTML = (details.safe_reasons || []).map(item => `<li class="xai-factor-item"><span>${item}</span></li>`).join('') || '<li class="xai-factor-item"><span>Standard fleet baseline</span></li>';
     explainModal.showModal();
 }
 
@@ -301,44 +315,59 @@ function renderVehicleCards(items) {
         const zone = item.zone_name || item.current_zone_name || 'Outside';
         const profile = item.profile || 'normal';
         const position = item.lat && item.lon ? [item.lat, item.lon] : null;
+        const isCritical = risk >= 80 || overload;
 
         if (position) {
             if (!markers[item.vehicle_id]) {
                 markers[item.vehicle_id] = L.circleMarker(position, {
-                    radius: 7,
+                    radius: isCritical ? 9 : 7,
                     color: style.color,
                     fillColor: style.color,
                     fillOpacity: 0.92,
-                    weight: 2,
+                    weight: isCritical ? 3 : 2,
+                    className: isCritical ? 'pulse-marker-ring' : '',
                 }).addTo(map);
             } else {
                 slideMarker(markers[item.vehicle_id], position);
                 markers[item.vehicle_id].setStyle({ color: style.color, fillColor: style.color });
             }
-            markers[item.vehicle_id].bindPopup(
-                `<b>${item.vehicle_id}</b><br>District: ${item.district || 'Unknown'}<br>Profile: ${profile}<br>Risk: ${risk.toFixed(1)}<br>Prediction: ${predictionLabel} (${Math.round((prediction.probability || 0) * 100)}%)<br>Weight: ${weight.toFixed(1)} tons ${weightLocked ? '(Locked)' : '(Real-time)'}<br>Overload: ${overload ? 'YES' : 'NO'}<br>Zone: ${zone}`
-            );
+            markers[item.vehicle_id].bindPopup(`
+                <div style="font-family:var(--font-sans); padding:4px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <strong style="font-family:var(--font-heading); font-size:1.05rem;">${item.vehicle_id}</strong>
+                        <span class="badge ${style.cls}"><span class="badge-dot"></span>${style.label}</span>
+                    </div>
+                    <div style="font-size:0.82rem; color:#64748b; line-height:1.5;">
+                        District: <strong>${item.district || 'Unknown'}</strong><br>
+                        Material Profile: <strong>${profile}</strong><br>
+                        Current Load: <strong>${weight.toFixed(1)} tons</strong> (Limit: 20.0t)<br>
+                        Overload Flag: <strong style="color:${overload ? '#ef4444' : '#10b981'}">${overload ? '🔴 YES' : '🟢 NO'}</strong><br>
+                        Zone Location: ${zone}
+                    </div>
+                </div>
+            `);
         }
 
         return `
             <article class="vehicle-card" style="border-left-color:${style.color}">
-                <h3>${item.vehicle_id}</h3>
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                    <h3 style="font-family:var(--font-heading);">${item.vehicle_id}</h3>
+                    <span class="badge ${style.cls}" data-vehicle-id="${item.vehicle_id}"><span class="badge-dot"></span>${style.label} • ${risk.toFixed(1)}</span>
+                </div>
                 <div class="vehicle-meta">
                     District: <strong>${item.district || 'Unknown'}</strong><br>
                     Profile: <strong>${profile}</strong><br>
                     Route: ${item.route_name || item.route_id || '-'}<br>
                     Zone: ${zone}<br>
                     Trips: ${item.trips || 0} total / ${item.trips_24h || 0} in 24h<br>
-                    Risk: ${risk.toFixed(1)}<br>
-                    Prediction: ${predictionLabel} (${Math.round((prediction.probability || 0) * 100)}%)<br>
-                    Weight: ${weight.toFixed(1)} tons ${weightLocked ? '(Locked)' : '(Real-time)'}<br>
-                    Avg Weight: ${averageWeight.toFixed(1)} tons<br>
-                    Overload: ${overload ? 'YES' : 'NO'}<br>
-                    Threat: ${Number(item.final_threat_score || 0).toFixed(1)}<br>
-                    Last Event: ${item.last_event || 'n/a'}
+                    Weight: <strong>${weight.toFixed(1)} tons</strong> ${weightLocked ? '(Locked)' : '(Real-time)'}<br>
+                    Overload: <strong style="color:${overload ? 'var(--accent-rose)' : 'var(--accent-emerald)'}">${overload ? '🔴 YES' : '🟢 NO'}</strong><br>
+                    Threat Score: <strong>${Number(item.final_threat_score || 0).toFixed(1)}</strong>
                 </div>
-                <span class="badge ${style.cls}" data-vehicle-id="${item.vehicle_id}">${style.label} • ${risk.toFixed(1)}</span>
-                <div style="margin-top:8px;"><a class="btn-link" href="/vehicles/${encodeURIComponent(item.vehicle_id)}">Open Full Details</a></div>
+                <div style="margin-top:8px; display:flex; gap:8px;">
+                    <button type="button" class="btn-link" style="font-size:0.78rem; padding:4px 10px;" onclick="showRiskExplain('${item.vehicle_id}')">XAI Explain</button>
+                    <a class="btn-link" style="font-size:0.78rem; padding:4px 10px;" href="/vehicles/${encodeURIComponent(item.vehicle_id)}">Full Log</a>
+                </div>
             </article>
         `;
     }).join('');
