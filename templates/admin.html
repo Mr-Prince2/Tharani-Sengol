@@ -1,20 +1,24 @@
 {% extends 'base.html' %}
 {% block content %}
 <section class="card animate-fade-in stagger-1">
-    <h2>Admin Configuration</h2>
-    <p class="muted">Edit vehicle profile assignment and permit limits live. Changes are stored in SQLite and applied immediately.</p>
-    <div class="toolbar-actions" style="margin-top: 14px; margin-bottom: 14px;">
-        <button id="resetDataBtn" type="button">Reset Live Data (Fresh Simulation)</button>
-        <a class="btn-link" href="/">Go To Home</a>
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <div>
+            <h2 style="font-family: var(--font-heading);">Admin Fleet & Permit Controls</h2>
+            <p class="muted">Edit vehicle risk profile assignments and 24h trip permit thresholds. Changes are stored in SQLite and applied immediately.</p>
+        </div>
+        <button id="resetDataBtn" type="button" class="btn-link" style="font-size: 0.82rem; padding: 6px 14px;">
+            Reset Simulation Data
+        </button>
     </div>
+
     <div class="table-responsive">
         <table id="adminTable">
             <thead>
                 <tr>
-                    <th>Vehicle</th>
-                    <th>Profile</th>
+                    <th>Vehicle ID</th>
+                    <th>Risk Profile</th>
                     <th>Allowed Trips (24h)</th>
-                    <th>Window Hours</th>
+                    <th>Rolling Window (hrs)</th>
                     <th>Start Hour</th>
                     <th>End Hour</th>
                     <th>Action</th>
@@ -23,7 +27,7 @@
             <tbody>
                 {% for row in rows %}
                 <tr data-vehicle="{{ row.vehicle_id }}">
-                    <td><strong>{{ row.vehicle_id }}</strong></td>
+                    <td><strong style="font-family: var(--font-heading);">{{ row.vehicle_id }}</strong></td>
                     <td>
                         <select class="profile">
                             <option value="safe" {% if row.profile == 'safe' %}selected{% endif %}>safe</option>
@@ -35,7 +39,7 @@
                     <td><input class="window" type="number" min="1" max="48" value="{{ row.rolling_window_hours }}" style="width: 80px;" /></td>
                     <td><input class="start" type="number" min="0" max="23" value="{{ row.start_hour }}" style="width: 80px;" /></td>
                     <td><input class="end" type="number" min="1" max="24" value="{{ row.end_hour }}" style="width: 80px;" /></td>
-                    <td><button class="save-btn" type="button">Save</button></td>
+                    <td><button class="save-btn" type="button" style="padding: 6px 14px; font-size: 0.8rem;">Save</button></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -45,8 +49,8 @@
     <p class="muted" id="adminStatus" style="margin-top: 10px;">Ready</p>
 </section>
 
-<section class="card animate-fade-in stagger-2">
-    <h2>Scenario and Environment Controls</h2>
+<section class="card animate-fade-in stagger-2" style="margin-top: 20px;">
+    <h2 style="font-family: var(--font-heading);">Scenario & Operational Factors</h2>
     <div class="toolbar-actions" style="margin-top: 12px; margin-bottom: 14px;">
         <button type="button" class="preset-btn" data-preset="calm_day">Calm Day</button>
         <button type="button" class="preset-btn" data-preset="suspicious_day">Suspicious Day</button>
@@ -56,7 +60,7 @@
         <table>
             <tbody>
                 <tr>
-                    <td><strong>Weather</strong></td>
+                    <td><strong>Weather Condition</strong></td>
                     <td>
                         <select id="weatherSel" style="width: 100%;">
                             <option value="clear">clear</option>
@@ -79,19 +83,19 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><strong>GPS Noise</strong></td>
+                    <td><strong>GPS Telemetry Noise</strong></td>
                     <td><input id="gpsNoise" type="number" min="0" max="0.4" step="0.01" value="0.10" style="width: 100%;" /></td>
                 </tr>
                 <tr>
-                    <td><strong>Camera Noise</strong></td>
+                    <td><strong>Camera OCR Noise</strong></td>
                     <td><input id="cameraNoise" type="number" min="0" max="0.4" step="0.01" value="0.12" style="width: 100%;" /></td>
                 </tr>
                 <tr>
-                    <td><strong>Anomaly Factor</strong></td>
+                    <td><strong>Anomaly Scale Factor</strong></td>
                     <td><input id="anomalyFactor" type="number" min="0.4" max="2.5" step="0.05" value="1.00" style="width: 100%;" /></td>
                 </tr>
                 <tr>
-                    <td><strong>Traffic Factor</strong></td>
+                    <td><strong>Traffic Density Factor</strong></td>
                     <td><input id="trafficFactor" type="number" min="0.5" max="2.0" step="0.05" value="1.00" style="width: 100%;" /></td>
                 </tr>
             </tbody>
@@ -99,9 +103,9 @@
     </div>
     <div style="margin-top: 16px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
         <button id="saveControlBtn" type="button">Save Control Settings</button>
-        <span class="muted" id="controlStateText">Control state not loaded yet.</span>
+        <span class="muted" id="controlStateText">Control state initializing...</span>
     </div>
 </section>
 
-<script src="{{ url_for('static', filename='admin.js') }}"></script>
+<script src="{{ url_for('static', filename='admin.js') }}?v=102"></script>
 {% endblock %}

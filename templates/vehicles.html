@@ -1,35 +1,51 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="card">
-    <h2>Vehicle Registry</h2>
-    <div class="filter-bar">
-        <input id="vehiclesSearchInput" type="search" placeholder="Search vehicle, district, route, profile, event..." />
-        <select id="vehiclesDistrictSelect"></select>
-        <button id="vehiclesSearchApplyBtn" type="button">Search</button>
-        <button id="vehiclesSearchClearBtn" type="button">Clear</button>
+<section class="card animate-fade-in stagger-1">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <div>
+            <h2 style="font-family: var(--font-heading);">Vehicle Fleet Registry</h2>
+            <p class="muted">Live telemetry directory tracking active mining transport lorries, risk profiles, and estimated payload tonnages.</p>
+        </div>
+        <a class="btn-link" href="/export/trips.csv" style="font-size: 0.82rem; padding: 6px 14px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Export Fleet CSV
+        </a>
     </div>
-    <table>
-        <thead>
-            <tr>
-                <th>Vehicle</th>
-                <th>District</th>
-                <th>Profile</th>
-                <th>Route</th>
-                <th>Zone</th>
-                <th>Trips Total</th>
-                <th>Trips 24h</th>
-                <th>Risk</th>
-                <th>Prediction</th>
-                <th>Weight</th>
-                <th>Overload</th>
-                <th>Updated</th>
-            </tr>
-        </thead>
-        <tbody id="vehiclesTableBody">
-            <tr><td colspan="12">Loading vehicles...</td></tr>
-        </tbody>
-    </table>
-    <div id="vehiclesPageControls" class="page-controls"></div>
+
+    <div class="filter-bar" style="margin-bottom: 16px;">
+        <input id="vehiclesSearchInput" type="search" placeholder="Search vehicle ID, district, route, profile..." style="flex: 1; min-width: 240px;" />
+        <select id="vehiclesDistrictSelect" style="min-width: 160px;"></select>
+        <button id="vehiclesSearchApplyBtn" type="button">Search</button>
+        <button id="vehiclesSearchClearBtn" type="button" class="btn-link">Clear</button>
+    </div>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Vehicle ID</th>
+                    <th>District</th>
+                    <th>Profile</th>
+                    <th>Route</th>
+                    <th>Zone</th>
+                    <th>Trips (Total/24h)</th>
+                    <th>Risk</th>
+                    <th>Prediction</th>
+                    <th>Weight</th>
+                    <th>Overload Flag</th>
+                    <th>Updated</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="vehiclesTableBody">
+                <tr><td colspan="12"><div class="skeleton-loader skeleton-text" style="margin: 10px 0;"></div></td></tr>
+                <tr><td colspan="12"><div class="skeleton-loader skeleton-text medium" style="margin: 10px 0;"></div></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="vehiclesPageControls" class="page-controls" style="margin-top: 16px;"></div>
 </section>
-<script src="{{ url_for('static', filename='vehicles.js') }}"></script>
+
+<script src="{{ url_for('static', filename='vehicles.js') }}?v=102"></script>
 {% endblock %}

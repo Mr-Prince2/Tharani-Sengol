@@ -1,28 +1,48 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="card">
-    <h2>Alert History</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Time</th>
-                <th>Vehicle</th>
-                <th>Severity</th>
-                <th>Message</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in rows %}
-            <tr>
-                <td>{{ row.alert_time }}</td>
-                <td>{{ row.vehicle_id }}</td>
-                <td>{{ row.severity }}</td>
-                <td>{{ row.message }}</td>
-            </tr>
-            {% else %}
-            <tr><td colspan="4">No alerts yet.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<section class="card animate-fade-in stagger-1">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <div>
+            <h2 style="font-family: var(--font-heading);">System Alert Stream</h2>
+            <p class="muted">Audit log recording compliance infractions, route deviations, speed spikes, and predicted overload events.</p>
+        </div>
+        <a class="btn-link" href="/export/alerts.csv" style="font-size: 0.82rem; padding: 6px 14px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Export Alerts CSV
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Vehicle Reg #</th>
+                    <th>Severity Level</th>
+                    <th>Alert Summary Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    <td style="font-family: monospace; font-weight: 600; color: var(--text-secondary);">{{ row.alert_time }}</td>
+                    <td><strong style="font-family: var(--font-heading);">{{ row.vehicle_id }}</strong></td>
+                    <td>
+                        {% if row.severity == 'critical' or row.severity == 'danger' %}
+                            <span class="badge danger"><span class="badge-dot"></span>CRITICAL</span>
+                        {% elif row.severity == 'warning' or row.severity == 'suspicious' %}
+                            <span class="badge suspicious"><span class="badge-dot"></span>WARNING</span>
+                        {% else %}
+                            <span class="badge safe"><span class="badge-dot"></span>INFO</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ row.message }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="muted" style="text-align: center; padding: 24px;">No compliance alerts logged yet. System operating within normal thresholds.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </section>
 {% endblock %}
