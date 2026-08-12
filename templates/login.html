@@ -1,44 +1,33 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
     <title>Secure Access Gateway | {{ web_name if web_name else 'Tharani Sengol' }}</title>
     <meta name="description" content="Government-Integrated Anti-Illegal Mining Intelligence & AI Fleet Monitoring Portal" />
+    
+    <!-- Zero-FOUC Theme Initializer -->
+    <script>
+        (function() {
+            try {
+                var saved = localStorage.getItem('tharani_theme');
+                if (saved) {
+                    document.documentElement.setAttribute('data-theme', saved);
+                }
+            } catch (e) {}
+        })();
+    </script>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}?v=100" />
     
     <style>
-        /* CSS Reset & Variables */
-        :root {
-            --bg-dark: #060913;
-            --bg-card: rgba(13, 19, 36, 0.78);
-            --bg-input: rgba(15, 23, 42, 0.85);
-            --border-subtle: rgba(255, 255, 255, 0.08);
-            --border-accent: rgba(56, 189, 248, 0.22);
-            --border-focus: #0ea5e9;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --accent-cyan: #38bdf8;
-            --accent-blue: #2563eb;
-            --accent-emerald: #10b981;
-            --accent-gold: #f59e0b;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-dark);
+            background-color: var(--bg-canvas);
             color: var(--text-primary);
             min-height: 100vh;
             display: flex;
@@ -46,9 +35,10 @@
             justify-content: center;
             overflow-x: hidden;
             position: relative;
+            padding: 20px;
         }
 
-        /* Ambient Animated Background */
+        /* Ambient Background Orbs */
         .ambient-bg {
             position: fixed;
             inset: 0;
@@ -60,15 +50,15 @@
         .ambient-orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.22;
+            filter: blur(100px);
+            opacity: 0.18;
             animation: pulse-orb 14s infinite alternate ease-in-out;
         }
 
         .orb-1 {
             width: 550px;
             height: 550px;
-            background: radial-gradient(circle, #0284c7 0%, transparent 70%);
+            background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%);
             top: -120px;
             left: -120px;
         }
@@ -76,356 +66,175 @@
         .orb-2 {
             width: 650px;
             height: 650px;
-            background: radial-gradient(circle, #1d4ed8 0%, transparent 70%);
+            background: radial-gradient(circle, var(--accent-blue) 0%, transparent 70%);
             bottom: -160px;
             right: -120px;
             animation-delay: -7s;
         }
 
-        .orb-3 {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, #0d9488 0%, transparent 70%);
-            top: 45%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.15;
-        }
-
         @keyframes pulse-orb {
             0% { transform: scale(1) translateY(0); }
-            100% { transform: scale(1.15) translateY(-25px); }
-        }
-
-        /* High-Tech Grid Pattern */
-        .grid-overlay {
-            position: fixed;
-            inset: 0;
-            background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-            background-size: 44px 44px;
-            z-index: 1;
-            pointer-events: none;
+            100% { transform: scale(1.12) translateY(-20px); }
         }
 
         /* Container Layout */
         .login-wrapper {
             position: relative;
-            z-index: 2;
+            z-index: 10;
             width: 100%;
-            max-width: 1180px;
-            margin: 30px auto;
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .login-container {
+            max-width: 1080px;
             display: grid;
-            grid-template-columns: 1.15fr 1fr;
-            width: 100%;
+            grid-template-columns: 1.1fr 0.9fr;
             background: var(--bg-card);
-            border: 1px solid var(--border-accent);
-            border-radius: 24px;
-            box-shadow: 
-                0 30px 70px -15px rgba(0, 0, 0, 0.8),
-                0 0 50px rgba(14, 165, 233, 0.08);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: var(--glass-backdrop);
             overflow: hidden;
         }
 
-        /* LEFT SIDE - Brand & Operations Panel */
+        @media (max-width: 900px) {
+            .login-wrapper {
+                grid-template-columns: 1fr;
+            }
+            .brand-section {
+                padding: 32px 24px !important;
+            }
+        }
+
+        /* Left Side Branding */
         .brand-section {
-            background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(8, 12, 22, 0.92)),
-                        radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 60%);
-            padding: 56px 48px;
+            padding: 48px;
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border-subtle);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            position: relative;
-            border-right: 1px solid var(--border-subtle);
         }
 
-        .brand-header {
+        .brand-logo-area {
             display: flex;
             align-items: center;
             gap: 14px;
-            margin-bottom: 36px;
+            margin-bottom: 24px;
         }
 
-        .gov-emblem {
+        .brand-logo-icon {
             width: 48px;
             height: 48px;
             border-radius: 12px;
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(37, 99, 235, 0.25));
-            border: 1px solid rgba(56, 189, 248, 0.45);
+            background: var(--accent-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+            color: #ffffff;
+            box-shadow: 0 0 20px var(--accent-glow);
         }
 
-        .gov-emblem svg {
-            width: 26px;
-            height: 26px;
-            color: var(--accent-cyan);
-        }
+        .brand-logo-icon svg { width: 26px; height: 26px; }
 
-        .brand-meta {
-            display: flex;
-            flex-direction: column;
+        .brand-logo-title h1 {
+            font-size: 1.4rem;
+            margin: 0;
         }
-
-        .brand-badge {
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--accent-cyan);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .brand-badge::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background-color: var(--accent-cyan);
-            box-shadow: 0 0 8px var(--accent-cyan);
-        }
-
-        .brand-title-sub {
-            font-size: 0.86rem;
+        .brand-logo-title p {
+            font-size: 0.76rem;
             color: var(--text-secondary);
-            font-weight: 500;
+            margin: 2px 0 0 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
         }
 
-        .brand-hero {
-            margin-bottom: 32px;
+        .hero-statement h2 {
+            font-size: 1.85rem;
+            line-height: 1.25;
+            margin-bottom: 14px;
         }
-
-        .logo-text {
-            font-family: 'Outfit', sans-serif;
-            font-size: 2.8rem;
-            font-weight: 800;
-            line-height: 1.1;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #ffffff 30%, #93c5fd 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 16px;
-        }
-
-        .tagline {
-            font-size: 1.02rem;
-            color: #cbd5e1;
-            font-weight: 400;
+        .hero-statement p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
             line-height: 1.6;
-            margin-bottom: 32px;
-        }
-
-        /* Live Operational Highlights Grid */
-        .system-highlights {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-
-        .highlight-card {
-            background: rgba(15, 23, 42, 0.65);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 14px;
-            padding: 16px;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .highlight-card:hover {
-            border-color: rgba(56, 189, 248, 0.35);
-            background: rgba(15, 23, 42, 0.85);
-            transform: translateY(-2px);
-        }
-
-        .highlight-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: rgba(56, 189, 248, 0.12);
-            color: var(--accent-cyan);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .highlight-info h4 {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 2px;
-        }
-
-        .highlight-info p {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            line-height: 1.3;
-        }
-
-        .brand-footer {
-            border-top: 1px solid var(--border-subtle);
-            padding-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.78rem;
-            color: var(--text-muted);
-        }
-
-        .security-stamp {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--accent-emerald);
-            font-weight: 600;
-        }
-
-        /* RIGHT SIDE - Form Section */
-        .form-section {
-            padding: 56px 48px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            background: rgba(10, 15, 28, 0.88);
-            position: relative;
-        }
-
-        .login-card-header {
-            margin-bottom: 28px;
-        }
-
-        .portal-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: rgba(14, 165, 233, 0.1);
-            border: 1px solid rgba(14, 165, 233, 0.25);
-            color: var(--accent-cyan);
-            font-size: 0.73rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-
-        .login-card-header h2 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 2.1rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 6px;
-            letter-spacing: -0.3px;
-        }
-
-        .login-card-header p {
-            color: var(--text-secondary);
-            font-size: 0.92rem;
-            line-height: 1.5;
         }
 
         /* Demo Roles Selector */
         .demo-roles-container {
             margin-bottom: 24px;
-            padding: 14px 16px;
-            background: rgba(15, 23, 42, 0.75);
-            border: 1px dashed rgba(56, 189, 248, 0.25);
-            border-radius: 14px;
+            background: var(--bg-surface);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
         }
 
         .demo-roles-title {
-            font-size: 0.74rem;
+            font-size: 0.8rem;
             font-weight: 700;
+            color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-muted);
+            letter-spacing: 0.05em;
             margin-bottom: 10px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
         }
 
-        .demo-roles-title span {
-            color: var(--accent-cyan);
-            font-weight: 500;
-            text-transform: none;
-            font-size: 0.72rem;
-        }
-
         .role-pills {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
         }
 
         .role-pill {
-            background: rgba(30, 41, 59, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #cbd5e1;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 6px;
-            user-select: none;
+            box-shadow: none;
         }
 
         .role-pill:hover {
-            background: rgba(14, 165, 233, 0.18);
-            border-color: rgba(56, 189, 248, 0.45);
-            color: #ffffff;
-            transform: translateY(-1px);
+            border-color: var(--border-focus);
+            background: var(--bg-card-hover);
         }
 
         .role-pill.active {
-            background: rgba(14, 165, 233, 0.25);
-            border-color: var(--accent-cyan);
+            background: var(--accent-gradient);
+            border-color: transparent;
             color: #ffffff;
-            box-shadow: 0 0 12px rgba(14, 165, 233, 0.25);
+            box-shadow: 0 4px 12px var(--accent-glow);
         }
 
-        /* Form Controls */
+        /* Right Side Form */
+        .form-section {
+            padding: 48px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
         .form-grid {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 18px;
         }
 
         .field-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .field-label {
             font-size: 0.85rem;
             font-weight: 600;
-            color: #cbd5e1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            color: var(--text-secondary);
         }
 
         .input-wrapper {
@@ -436,332 +245,100 @@
 
         .input-icon {
             position: absolute;
-            left: 16px;
-            width: 20px;
-            height: 20px;
+            left: 14px;
+            width: 18px;
+            height: 18px;
             color: var(--text-muted);
             pointer-events: none;
-            transition: color 0.2s ease;
         }
 
-        input[type="text"],
-        input[type="password"] {
+        .input-wrapper input {
+            padding-left: 44px;
             width: 100%;
-            background: var(--bg-input);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: var(--text-primary);
-            padding: 14px 16px 14px 48px;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: all 0.25s ease;
-            outline: none;
         }
 
-        input[type="text"]:focus,
-        input[type="password"]:focus {
-            border-color: var(--border-focus);
-            background: rgba(15, 23, 42, 1);
-            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.16);
-        }
-
-        .input-wrapper:focus-within .input-icon {
-            color: var(--accent-cyan);
-        }
-
-        /* Eye Icon Button for Password */
         .password-toggle {
             position: absolute;
-            right: 14px;
+            right: 12px;
             background: none;
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            padding: 6px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: color 0.2s ease;
+            padding: 4px;
+            box-shadow: none;
         }
 
         .password-toggle:hover {
             color: var(--text-primary);
+            background: none;
+            box-shadow: none;
         }
 
-        .password-toggle svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        /* Primary Button */
-        button[type="submit"] {
-            width: 100%;
-            background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
-            color: #ffffff;
-            border: none;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 4px 20px rgba(2, 132, 199, 0.35);
-            margin-top: 6px;
-            font-family: inherit;
-        }
-
-        button[type="submit"]:hover {
-            background: linear-gradient(135deg, #0ea5e9 0%, #1d4ed8 100%);
-            box-shadow: 0 6px 25px rgba(14, 165, 233, 0.5);
-            transform: translateY(-2px);
-        }
-
-        button[type="submit"]:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 10px rgba(2, 132, 199, 0.3);
-        }
-
-        button[type="submit"] svg {
-            width: 20px;
-            height: 20px;
-            transition: transform 0.2s ease;
-        }
-
-        button[type="submit"]:hover svg {
-            transform: translateX(3px);
-        }
-
-        /* Status Box with CSS Pseudo Status Indicator */
         .status-container {
-            margin-top: 24px;
-        }
-
-        #loginStatus {
-            font-size: 0.85rem;
+            margin-top: 18px;
+            font-size: 0.84rem;
             color: var(--text-secondary);
-            text-align: left;
-            padding: 12px 16px;
-            background: rgba(15, 23, 42, 0.65);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            align-items: center;
-            transition: all 0.3s ease;
-            line-height: 1.4;
-        }
-
-        #loginStatus::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--accent-emerald);
-            box-shadow: 0 0 8px var(--accent-emerald);
-            margin-right: 12px;
-            flex-shrink: 0;
-            animation: status-pulse 2s infinite ease-in-out;
-        }
-
-        @keyframes status-pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.85); }
-        }
-
-        /* Action Toolbar */
-        .toolbar-actions {
-            margin-top: 28px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-subtle);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .btn-link {
-            color: var(--accent-cyan);
-            text-decoration: none;
-            font-size: 0.88rem;
-            font-weight: 600;
-            transition: color 0.2s ease, transform 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-link:hover {
-            color: #cbd5e1;
-            transform: translateX(-3px);
-        }
-
-        .btn-link svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .support-hint {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-        }
-
-        /* Responsive Breakpoints */
-        @media (max-width: 992px) {
-            .login-container {
-                grid-template-columns: 1fr;
-                max-width: 540px;
-            }
-            .brand-section {
-                padding: 40px 32px;
-                border-right: none;
-                border-bottom: 1px solid var(--border-subtle);
-            }
-            .form-section {
-                padding: 40px 32px;
-            }
-            .system-highlights {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .login-wrapper {
-                padding: 12px;
-                margin: 10px auto;
-            }
-            .brand-section, .form-section {
-                padding: 28px 20px;
-            }
-            .logo-text {
-                font-size: 2.2rem;
-            }
-            .system-highlights {
-                grid-template-columns: 1fr;
-            }
-            .login-card-header h2 {
-                font-size: 1.65rem;
-            }
-            .toolbar-actions {
-                flex-direction: column;
-                gap: 12px;
-                align-items: flex-start;
-            }
+            padding: 10px 14px;
+            background: var(--bg-surface);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
         }
     </style>
 </head>
 <body>
 
-<div class="ambient-bg" aria-hidden="true">
+<div class="ambient-bg">
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
-    <div class="ambient-orb orb-3"></div>
 </div>
-<div class="grid-overlay" aria-hidden="true"></div>
 
 <div class="login-wrapper">
-    <main class="login-container">
-        
-        <!-- LEFT SIDE: Brand & Intelligence Overview -->
-        <section class="brand-section">
-            <div>
-                <header class="brand-header">
-                    <div class="gov-emblem" aria-hidden="true">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
-                    </div>
-                    <div class="brand-meta">
-                        <span class="brand-badge">State Oversight Portal</span>
-                        <span class="brand-title-sub">Anti-Illegal Mining Intelligence</span>
-                    </div>
-                </header>
-
-                <div class="brand-hero">
-                    <h1 class="logo-text">{{ web_name if web_name else 'Tharani Sengol' }}</h1>
-                    <p class="tagline">Government-Integrated GPS & AI Fleet Oversight System. Enabling real-time vehicle auditing, automated transit permits, and zero-tolerance illegal mineral transport monitoring.</p>
+    <!-- LEFT SIDE: Branding -->
+    <section class="brand-section">
+        <div>
+            <div class="brand-logo-area">
+                <div class="brand-logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
                 </div>
-
-                <div class="system-highlights">
-                    <div class="highlight-card">
-                        <div class="highlight-icon" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                        </div>
-                        <div class="highlight-info">
-                            <h4>Real-Time Telemetry</h4>
-                            <p>Active GPS & geofence tracking for all registered mineral haulers.</p>
-                        </div>
-                    </div>
-
-                    <div class="highlight-card">
-                        <div class="highlight-icon" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                            </svg>
-                        </div>
-                        <div class="highlight-info">
-                            <h4>AI Anomaly Engine</h4>
-                            <p>Automated threat scoring & illegal route deviation alerts.</p>
-                        </div>
-                    </div>
-
-                    <div class="highlight-card">
-                        <div class="highlight-icon" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                            </svg>
-                        </div>
-                        <div class="highlight-info">
-                            <h4>256-Bit SSL Gateway</h4>
-                            <p>AES-encrypted transport layer with role-based access control.</p>
-                        </div>
-                    </div>
-
-                    <div class="highlight-card">
-                        <div class="highlight-icon" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
-                            </svg>
-                        </div>
-                        <div class="highlight-info">
-                            <h4>Automated E-Permits</h4>
-                            <p>Direct compliance integration with state transport registry.</p>
-                        </div>
-                    </div>
+                <div class="brand-logo-title">
+                    <h1>{{ web_name if web_name else 'Tharani Sengol' }}</h1>
+                    <p>Intelligence Command</p>
                 </div>
             </div>
 
-            <footer class="brand-footer">
-                <span>© 2026 Department of Mines & Transport Oversight</span>
-                <span class="security-stamp">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 1a2 2 0 0 1 2 2v2h-4V3a2 2 0 0 1 2-2zm3 4V3a3 3 0 0 0-6 0v2a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/>
-                    </svg>
-                    Gov Secure Protocol v4.2
-                </span>
-            </footer>
-        </section>
+            <div class="hero-statement" style="margin-top: 28px;">
+                <h2>Anti-Illegal Mining AI Operations Gateway</h2>
+                <p>Real-time vehicle telemetry tracking, automated load estimation, geofence boundary enforcement, and AI threat analysis for Tamil Nadu mineral logistics.</p>
+            </div>
+        </div>
 
-        <!-- RIGHT SIDE: Corporate Form Section -->
-        <section class="form-section">
-            <header class="login-card-header">
-                <span class="portal-tag">Enterprise Gateway</span>
+        <div style="margin-top: 36px; display: flex; align-items: center; justify-content: space-between;">
+            <button type="button" onclick="toggleTheme()" class="theme-toggle-btn" style="max-width: 170px;" aria-label="Toggle Theme">
+                <span class="theme-toggle-icon">
+                    <span class="theme-toggle-icon-sym">🌙</span>
+                    <span class="theme-toggle-label">Dark Mode</span>
+                </span>
+            </button>
+            <span class="muted" style="font-size: 0.78rem;">v3.2 Enterprise Build</span>
+        </div>
+    </section>
+
+    <!-- RIGHT SIDE: Corporate Form -->
+    <section class="form-section">
+        <div>
+            <header style="margin-bottom: 20px;">
+                <span class="badge safe" style="margin-bottom: 8px;">Enterprise Gateway</span>
                 <h2>Officer Authentication</h2>
-                <p>Sign in using your assigned operational role credentials.</p>
+                <p class="muted">Sign in using your assigned operational role credentials.</p>
             </header>
 
-            <!-- Demo Roles Quick Selector -->
+            <!-- Quick Operational Roles -->
             <div class="demo-roles-container">
                 <div class="demo-roles-title">
-                    Quick Operational Demo Roles
-                    <span>Click to populate</span>
+                    <span>Quick Demo Credentials</span>
+                    <span style="font-weight: 400;">Click to fill</span>
                 </div>
                 <div class="role-pills">
                     <button type="button" class="role-pill" onclick="selectDemoRole('admin', 'Administrator')">
@@ -773,8 +350,8 @@
                     <button type="button" class="role-pill" onclick="selectDemoRole('owner1', 'Fleet Owner')">
                         <span>🚛</span> Fleet Owner
                     </button>
-                    <button type="button" class="role-pill" onclick="selectDemoRole('driver1', 'Driver')">
-                        <span>👤</span> Driver
+                    <button type="button" class="role-pill" onclick="selectDemoRole('operator1', 'Operator')">
+                        <span>👤</span> Operator
                     </button>
                 </div>
             </div>
@@ -791,16 +368,14 @@
                 </div>
 
                 <div class="field-group">
-                    <label for="passwordInput" class="field-label">
-                        <span>Security Password</span>
-                    </label>
+                    <label for="passwordInput" class="field-label">Security Password</label>
                     <div class="input-wrapper">
                         <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                         </svg>
-                        <input id="passwordInput" type="password" placeholder="Enter your password" autocomplete="current-password" required />
+                        <input id="passwordInput" type="password" placeholder="Enter password" autocomplete="current-password" required />
                         <button type="button" class="password-toggle" id="eyeBtn" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility">
-                            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                             </svg>
@@ -808,29 +383,24 @@
                     </div>
                 </div>
 
-                <button type="submit">
+                <button type="submit" style="width: 100%; margin-top: 6px;">
                     <span>Secure Login</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                     </svg>
                 </button>
             </form>
 
             <div class="status-container">
-                <p id="loginStatus">Live auth store connection established. Ready for credentials.</p>
+                <p id="loginStatus">Auth store ready. Enter operational credentials.</p>
             </div>
+        </div>
 
-            <footer class="toolbar-actions">
-                <a class="btn-link" href="/">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    <span>Return to Public Dashboard</span>
-                </a>
-                <span class="support-hint">Secured by TN Cyber Oversight</span>
-            </footer>
-        </section>
-    </main>
+        <footer style="margin-top: 24px; display: flex; align-items: center; justify-content: space-between;">
+            <a class="btn-link" href="/" style="font-size: 0.82rem;">← Return to Public Dashboard</a>
+            <span class="muted" style="font-size: 0.78rem;">TN Cyber Oversight</span>
+        </footer>
+    </section>
 </div>
 
 <script>
@@ -839,12 +409,19 @@
         const pInput = document.getElementById('passwordInput');
         const statusEl = document.getElementById('loginStatus');
         
+        const demoPasswords = {
+            'admin': 'admin123',
+            'officer1': 'officer123',
+            'owner1': 'owner123',
+            'operator1': 'operator123'
+        };
+        
         if (uInput) uInput.value = username;
-        if (pInput && !pInput.value) pInput.value = 'password123';
+        if (pInput) pInput.value = demoPasswords[username] || 'admin123';
         
         document.querySelectorAll('.role-pill').forEach(btn => btn.classList.remove('active'));
-        if (event && event.currentTarget) {
-            event.currentTarget.classList.add('active');
+        if (window.event && window.event.currentTarget) {
+            window.event.currentTarget.classList.add('active');
         }
         
         if (statusEl) {
@@ -873,7 +450,7 @@
     }
 </script>
 
-<script src="{{ url_for('static', filename='auth.js') }}?v=2"></script>
-<script src="{{ url_for('static', filename='login.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='auth.js') }}?v=3"></script>
+<script src="{{ url_for('static', filename='login.js') }}?v=3"></script>
 </body>
 </html>

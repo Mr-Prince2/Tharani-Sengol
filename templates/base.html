@@ -1,22 +1,41 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
     <title>{{ web_name if web_name else 'Tharani Sengol' }} | Anti-Illegal Mining Intelligence</title>
     <meta name="description" content="Tamil Nadu Anti-Illegal Mining Intelligence & AI Fleet Monitoring Platform" />
+    
+    <!-- Zero-FOUC Theme Initializer -->
+    <script>
+        (function() {
+            try {
+                var saved = localStorage.getItem('tharani_theme');
+                if (saved) {
+                    document.documentElement.setAttribute('data-theme', saved);
+                } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                    // Default to dark for operations room, but respect system light if preferred
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}?v=100" />
 </head>
 <body>
 
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
 <div class="app-layout">
     
+    <!-- Mobile Top Navigation Header -->
     <header class="mobile-top-bar">
         <a href="/" class="brand-wrap">
             <div class="brand-emblem" aria-hidden="true">
@@ -26,13 +45,19 @@
             </div>
             <h1>{{ web_name if web_name else 'Tharani Sengol' }}</h1>
         </a>
-        <button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="Toggle Navigation Menu">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-        </button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" onclick="toggleTheme()" class="btn-link" style="padding: 6px 10px;" aria-label="Toggle Theme">
+                <span class="theme-toggle-icon-sym">🌙</span>
+            </button>
+            <button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="Toggle Navigation Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
     </header>
 
+    <!-- Sidebar Navigation Drawer -->
     <aside id="sidebar" class="sidebar">
         <div class="sidebar-header">
             <a href="/" class="brand-wrap">
@@ -103,9 +128,18 @@
         </nav>
 
         <div class="sidebar-footer">
-            <span id="authUserBadge" class="muted"></span>
-            <a href="/login" id="loginNavLink" class="btn-link">Login</a>
-            <button type="button" id="logoutBtn" class="btn-link" style="display:none;">Logout</button>
+            <button type="button" onclick="toggleTheme()" class="theme-toggle-btn" aria-label="Toggle Theme">
+                <span class="theme-toggle-icon">
+                    <span class="theme-toggle-icon-sym">🌙</span>
+                    <span class="theme-toggle-label">Dark Mode</span>
+                </span>
+                <span style="font-size: 0.72rem; opacity: 0.7;">Switch</span>
+            </button>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px;">
+                <span id="authUserBadge" class="muted" style="font-size: 0.82rem; font-weight: 600;"></span>
+                <a href="/login" id="loginNavLink" class="btn-link" style="padding: 6px 12px; font-size: 0.82rem;">Login</a>
+                <button type="button" id="logoutBtn" class="btn-link" style="display:none; padding: 6px 12px; font-size: 0.82rem;">Logout</button>
+            </div>
         </div>
     </aside>
 
@@ -121,13 +155,13 @@
 
 <section id="chatWidget" class="chat-widget hidden">
     <header class="chat-header">
-        <strong>
+        <strong style="display: flex; align-items: center; gap: 6px;">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
             Tharani Sengol AI Assistant
         </strong>
-        <button id="chatCloseBtn" type="button" class="chat-close" aria-label="Close Assistant">×</button>
+        <button id="chatCloseBtn" type="button" class="chat-close" aria-label="Close Assistant" style="background:none; border:none; color:var(--text-secondary); font-size:1.2rem; cursor:pointer;">×</button>
     </header>
     <div id="chatMessages" class="chat-messages">
         <div class="chat-bubble bot">Welcome to Tharani Sengol AI. Ask about a district, truck ID, route deviation, mining zone, or real-time threat score.</div>
@@ -142,28 +176,37 @@
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const closeSidebarBtn = document.getElementById('closeSidebarBtn');
     const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
     
-    if (mobileMenuBtn && sidebar) {
+    function toggleMobileDrawer(open) {
+        if (!sidebar) return;
+        if (open) {
+            sidebar.classList.add('mobile-open');
+            if (sidebarOverlay) sidebarOverlay.classList.add('active');
+        } else {
+            sidebar.classList.remove('mobile-open');
+            if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+        }
+    }
+
+    if (mobileMenuBtn) {
         mobileMenuBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            sidebar.classList.toggle('mobile-open');
+            const isOpen = sidebar && sidebar.classList.contains('mobile-open');
+            toggleMobileDrawer(!isOpen);
         });
-        
-        if (closeSidebarBtn) {
-            closeSidebarBtn.addEventListener('click', () => {
-                sidebar.classList.remove('mobile-open');
-            });
-        }
-        
-        document.addEventListener('click', (e) => {
-            if (!sidebar.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
-                sidebar.classList.remove('mobile-open');
-            }
-        });
+    }
+
+    if (closeSidebarBtn) {
+        closeSidebarBtn.addEventListener('click', () => toggleMobileDrawer(false));
+    }
+
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', () => toggleMobileDrawer(false));
     }
 </script>
 
-<script src="{{ url_for('static', filename='auth.js') }}?v=2"></script>
-<script src="{{ url_for('static', filename='chatbot.js') }}?v=2"></script>
+<script src="{{ url_for('static', filename='auth.js') }}?v=3"></script>
+<script src="{{ url_for('static', filename='chatbot.js') }}?v=3"></script>
 </body>
 </html>

@@ -1,154 +1,132 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="card toolbar-card animate-fade-in stagger-1">
-    <h2>Consolidated Command Center</h2>
-    <div class="toolbar-actions">
-        <a class="btn-link" href="/export/alerts.csv">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            Export Alerts CSV
-        </a>
-        <a class="btn-link" href="/export/violations.csv">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            Export Violations CSV
-        </a>
-        <a class="btn-link" href="/export/trips.csv">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            Export Trips CSV
-        </a>
-    </div>
-</section>
-
-<section class="grid two">
-    <div class="card animate-fade-in stagger-2">
-        <h2>Live Fleet Summary</h2>
-        <div class="summary-grid">
-            <div><span>Vehicles</span><strong id="vehicleCount">0</strong></div>
-            <div><span>Total Trips</span><strong id="tripCount">0</strong></div>
-            <div><span>Dangerous</span><strong id="dangerCount">0</strong></div>
-            <div><span>Suspicious</span><strong id="suspiciousCount">0</strong></div>
+<div class="dashboard-bento">
+    <!-- Top Action Bar -->
+    <section class="bento-card bento-actions animate-fade-in stagger-1">
+        <div class="toolbar-actions" style="justify-content: flex-start;">
+            <strong style="margin-right:15px; color:var(--text-primary);">Exports:</strong>
+            <a class="btn-link" href="/export/alerts.csv">Alerts</a>
+            <a class="btn-link" href="/export/violations.csv">Violations</a>
+            <a class="btn-link" href="/export/trips.csv">Trips</a>
         </div>
-        <p class="muted" id="lastSync">Waiting for data...</p>
-    </div>
-    <div class="card animate-fade-in stagger-3">
+    </section>
+
+    <!-- Unified KPIs Row -->
+    <section class="bento-card bento-kpis animate-fade-in stagger-2">
+        <div class="kpi-grid">
+            <div class="kpi-item"><span>Active Vehicles</span><strong id="vehicleCount">0</strong></div>
+            <div class="kpi-item"><span>Total Trips</span><strong id="tripCount">0</strong></div>
+            <div class="kpi-item"><span>Dangerous</span><strong id="dangerCount">0</strong></div>
+            <div class="kpi-item"><span>Suspicious</span><strong id="suspiciousCount">0</strong></div>
+            <div class="kpi-item"><span>Avg Risk</span><strong id="tnAvgRisk">0</strong></div>
+            <div class="kpi-item"><span>Avg Threat</span><strong id="tnAvgThreat">0</strong></div>
+            <div class="kpi-item"><span>Configured Mines</span><strong id="tnConfiguredMines">0</strong></div>
+            <div class="kpi-item"><span>Overloads</span><strong id="tnOverloads">0</strong></div>
+        </div>
+        <!-- Hidden elements for backward compatibility with dashboard.js -->
+        <div style="display:none;">
+            <strong id="tnConfiguredTrucks">0</strong>
+            <strong id="tnConfiguredRoutes">0</strong>
+            <strong id="tnActiveTrucks">0</strong>
+            <p id="lastSync"></p>
+        </div>
+    </section>
+
+    <!-- Main View: Map & Alerts -->
+    <section class="bento-card bento-map animate-fade-in stagger-3">
+        <h2>Live Operations Map</h2>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+        <div id="map" style="height: 100%; min-height: 400px; border-radius: 8px;"></div>
+    </section>
+    
+    <section class="bento-card bento-alerts animate-fade-in stagger-4">
         <h2>Live Alerts</h2>
-        <div id="alertFeed" class="scroll-box">
-            <div class="alert-item"><div class="skeleton-loader skeleton-text"></div><div class="skeleton-loader skeleton-text" style="width:60%"></div></div>
-            <div class="alert-item"><div class="skeleton-loader skeleton-text"></div><div class="skeleton-loader skeleton-text" style="width:60%"></div></div>
+        <div id="alertFeed" class="scroll-box" style="max-height: 400px;">
+            <div class="alert-item"><div class="skeleton-loader skeleton-text"></div></div>
+            <div class="alert-item"><div class="skeleton-loader skeleton-text"></div></div>
         </div>
-    </div>
-</section>
+    </section>
 
-<section class="grid two">
-    <div class="card animate-fade-in stagger-4">
-        <h2>Overall Tamil Nadu Stats</h2>
-        <div class="summary-grid">
-            <div><span>Configured Trucks</span><strong id="tnConfiguredTrucks">0</strong></div>
-            <div><span>Configured Routes</span><strong id="tnConfiguredRoutes">0</strong></div>
-            <div><span>Configured Mines</span><strong id="tnConfiguredMines">0</strong></div>
-            <div><span>Active Trucks</span><strong id="tnActiveTrucks">0</strong></div>
-        </div>
-        <div class="summary-grid" style="margin-top:12px;">
-            <div><span>Overloads</span><strong id="tnOverloads">0</strong></div>
-            <div><span>Avg Risk</span><strong id="tnAvgRisk">0</strong></div>
-            <div><span>Avg Threat</span><strong id="tnAvgThreat">0</strong></div>
-            <div><span>State</span><strong>Tamil Nadu</strong></div>
-        </div>
-    </div>
-    <div class="card animate-fade-in stagger-5">
+    <!-- Inspection & AI Row -->
+    <section class="bento-card bento-inspection animate-fade-in stagger-5">
         <h2>Single Lorry Inspection</h2>
-        <label for="singleLorrySearchInput" class="muted">Search Lorry (example: truck_120 or 120)</label>
-        <div class="filter-bar" style="margin-top:10px;">
+        <div class="filter-bar">
             <input id="singleLorrySearchInput" type="search" placeholder="Search by truck id" class="single-lorry-select" />
             <button id="singleLorrySearchBtn" type="button">Show</button>
             <button id="singleLorryClearBtn" type="button">Clear</button>
         </div>
         <div id="singleLorryPanel" class="vehicle-meta single-lorry-panel" style="margin-top:12px;">
-            <div class="skeleton-loader"><div class="skeleton-text"></div><div class="skeleton-text" style="width: 80%"></div><div class="skeleton-text" style="width: 60%"></div></div>
+            <div class="skeleton-loader"><div class="skeleton-text"></div><div class="skeleton-text" style="width: 80%"></div></div>
         </div>
-    </div>
-</section>
+    </section>
 
-<section class="card animate-fade-in">
-    <h2>District Stats (Tamil Nadu)</h2>
-    <div id="districtPills" class="district-pill-list"></div>
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th>District</th>
-                    <th>Active Trucks</th>
-                    <th>Overloads</th>
-                    <th>Avg Risk</th>
-                    <th>Avg Threat</th>
-                </tr>
-            </thead>
-            <tbody id="districtStatsBody">
-                <tr><td colspan="5"><div class="skeleton-loader skeleton-text"></div></td></tr>
-                <tr><td colspan="5"><div class="skeleton-loader skeleton-text"></div></td></tr>
-                <tr><td colspan="5"><div class="skeleton-loader skeleton-text"></div></td></tr>
-            </tbody>
-        </table>
-    </div>
-</section>
-
-<section class="card animate-fade-in">
-    <h2>Map and Heat Intelligence</h2>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
-    <div class="heat-explain">
-        <strong>How heatmap works:</strong>
-        Brighter red means repeated or severe violations in that area. Soft colors indicate isolated low-severity violations.
-    </div>
-    <div id="map"></div>
-</section>
-
-<section class="card animate-fade-in">
-    <h2>Vehicle Risk Board (paginated)</h2>
-    <div class="filter-bar">
-        <input id="lorrySearchInput" type="search" placeholder="Search truck, district, route, event..." />
-        <select id="districtFilterSelect"></select>
-        <button id="searchApplyBtn" type="button">Search</button>
-        <button id="searchClearBtn" type="button">Clear</button>
-    </div>
-    <div id="vehicleCards" class="vehicle-grid">
-        <article class="vehicle-card"><div class="skeleton-loader skeleton-title"></div><div class="skeleton-loader skeleton-block"></div></article>
-        <article class="vehicle-card"><div class="skeleton-loader skeleton-title"></div><div class="skeleton-loader skeleton-block"></div></article>
-    </div>
-    <div id="lorryPageControls" class="page-controls"></div>
-</section>
-
-<section class="card animate-fade-in">
-    <h2>AI Prediction Stack</h2>
-    <div class="grid two model-grid">
-        <div class="model-panel">
-            <h3>Classification Model</h3>
-            <p class="muted">Predicts illegal behavior probability from GPS, route, trip, and risk signals.</p>
-            <div class="summary-grid" style="margin-top:12px;">
-                <div><span>Tracked Vehicles</span><strong id="stackClassVehicles">0</strong></div>
-                <div><span>High Predictions</span><strong id="stackClassHigh">0</strong></div>
-                <div><span>Medium Predictions</span><strong id="stackClassMedium">0</strong></div>
-                <div><span>Avg Probability</span><strong id="stackClassProb">0%</strong></div>
+    <section class="bento-card bento-ai animate-fade-in stagger-6">
+        <h2>AI Prediction Stack</h2>
+        <div class="grid two model-grid">
+            <div class="model-panel">
+                <h3>Classification</h3>
+                <div class="summary-grid" style="margin-top:12px;">
+                    <div><span>High Prob</span><strong id="stackClassHigh">0</strong></div>
+                    <div><span>Avg Prob</span><strong id="stackClassProb">0%</strong></div>
+                    <div style="display:none;"><strong id="stackClassVehicles">0</strong><strong id="stackClassMedium">0</strong></div>
+                </div>
+            </div>
+            <div class="model-panel">
+                <h3>Regression</h3>
+                <div class="summary-grid" style="margin-top:12px;">
+                    <div><span>Locked</span><strong id="stackRegLocked">0</strong></div>
+                    <div><span>Avg Wgt</span><strong id="stackRegAvgWeight">0.0</strong></div>
+                    <div style="display:none;"><strong id="stackRegOverload">0</strong><strong id="stackSystemScale">0 / 0</strong></div>
+                </div>
             </div>
         </div>
-        <div class="model-panel">
-            <h3>Regression Model</h3>
-            <p class="muted">Estimates truck load in tons and raises overload alerts when the limit is exceeded.</p>
-            <div class="summary-grid" style="margin-top:12px;">
-                <div><span>Locked Weights</span><strong id="stackRegLocked">0</strong></div>
-                <div><span>Overloads</span><strong id="stackRegOverload">0</strong></div>
-                <div><span>Avg Weight</span><strong id="stackRegAvgWeight">0.0</strong></div>
-                <div><span>Fleet Scale</span><strong id="stackSystemScale">0 / 0</strong></div>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
 
-<section class="card animate-fade-in">
-    <h2>Historical Risk Trend (SQLite)</h2>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <canvas id="riskHistoryChart" height="96"></canvas>
-</section>
+    <!-- History & Districts -->
+    <section class="bento-card bento-history animate-fade-in stagger-7">
+        <h2>Historical Risk Trend</h2>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <canvas id="riskHistoryChart" height="200"></canvas>
+    </section>
+
+    <section class="bento-card bento-districts animate-fade-in stagger-8">
+        <h2>District Stats</h2>
+        <div id="districtPills" class="district-pill-list"></div>
+        <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>District</th>
+                        <th>Active</th>
+                        <th>Overloads</th>
+                        <th>Avg Risk</th>
+                        <th>Threat</th>
+                    </tr>
+                </thead>
+                <tbody id="districtStatsBody">
+                    <tr><td colspan="5"><div class="skeleton-loader skeleton-text"></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Bottom: Vehicle Risk Board -->
+    <section class="bento-card bento-board animate-fade-in stagger-9">
+        <h2>Vehicle Risk Board</h2>
+        <div class="filter-bar">
+            <input id="lorrySearchInput" type="search" placeholder="Search truck, district, route, event..." />
+            <select id="districtFilterSelect"></select>
+            <button id="searchApplyBtn" type="button">Search</button>
+            <button id="searchClearBtn" type="button">Clear</button>
+        </div>
+        <div id="vehicleCards" class="vehicle-grid" style="margin-top: 15px;">
+            <article class="vehicle-card"><div class="skeleton-loader skeleton-title"></div><div class="skeleton-loader skeleton-block"></div></article>
+        </div>
+        <div id="lorryPageControls" class="page-controls"></div>
+    </section>
+</div>
 
 <dialog id="riskExplainModal" class="risk-modal">
     <h3 id="explainTitle">Risk Explanation</h3>

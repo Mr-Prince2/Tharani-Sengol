@@ -2,6 +2,7 @@
     const ROLE_RANK = { operator: 1, owner: 2, officer: 3, admin: 4 };
     const AUTH_TOKEN_KEY = 'tharani_auth_token';
     const AUTH_USER_KEY = 'tharani_auth_user';
+    const THEME_KEY = 'tharani_theme';
 
     function getStoredToken() {
         return localStorage.getItem(AUTH_TOKEN_KEY) || '';
@@ -24,6 +25,55 @@
         localStorage.setItem(AUTH_TOKEN_KEY, token || '');
         localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user || {}));
     }
+
+    /* ==========================================================================
+       Theme Switching Engine (Dark / Light)
+       ========================================================================== */
+    function applyTheme(theme) {
+        const targetTheme = theme === 'light' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', targetTheme);
+        localStorage.setItem(THEME_KEY, targetTheme);
+        
+        const metaColorScheme = document.querySelector('meta[name="color-scheme"]');
+        if (metaColorScheme) {
+            metaColorScheme.content = targetTheme;
+        }
+
+        // Update Theme Toggle Buttons across page
+        document.querySelectorAll('.theme-toggle-label').forEach(el => {
+            el.textContent = targetTheme === 'light' ? 'Light Mode' : 'Dark Mode';
+        });
+        document.querySelectorAll('.theme-toggle-icon-sym').forEach(el => {
+            el.textContent = targetTheme === 'light' ? '☀️' : '🌙';
+        });
+    }
+
+    function toggleTheme() {
+        const current = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = current === 'light' ? 'dark' : 'light';
+        applyTheme(next);
+    }
+
+    function initTheme() {
+        const saved = localStorage.getItem(THEME_KEY);
+        if (saved) {
+            applyTheme(saved);
+        } else {
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(prefersDark ? 'dark' : 'dark'); // Default to dark for ops center
+        }
+
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (!localStorage.getItem(THEME_KEY)) {
+                    applyTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+        }
+    }
+
+    window.toggleTheme = toggleTheme;
+    window.applyTheme = applyTheme;
 
     function isProtectedApi(pathname) {
         return pathname.startsWith('/api/') || pathname === '/gps' || pathname === '/camera' || pathname.startsWith('/export/');
@@ -122,8 +172,11 @@
         clearAuth,
         getStoredUser,
         getStoredToken,
+        toggleTheme,
+        applyTheme
     };
 
+    initTheme();
     hydrateAuthUser();
     wireLogout();
 })();

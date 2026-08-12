@@ -8,6 +8,8 @@ venv/
 .venv/
 env/
 geoguard-phase4/backend/venv/
+node_modules/
+.next/
 
 # Models
 *.pkl
@@ -15,6 +17,8 @@ geoguard-phase4/backend/venv/
 
 # Databases
 *.db
+*.db-shm
+*.db-wal
 *.sqlite3
 
 # VS Code
@@ -22,6 +26,9 @@ geoguard-phase4/backend/venv/
 
 # Environment variables
 .env
+
+# Temporary patch files
+temp_diff.patch
 
 # OS files
 .DS_Store
