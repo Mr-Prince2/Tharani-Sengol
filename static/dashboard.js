@@ -66,10 +66,23 @@ function slideMarker(marker, targetLatLng, duration=1000) {
 let seenAlertIds = new Set();
 let isFirstRiskChartRender = true;
 
-const map = L.map('map').setView([10.816, 78.730], 8);
+const map = L.map('map', {
+    zoomControl: true,
+    scrollWheelZoom: true,
+    maxZoom: 19
+}).setView([10.816, 78.730], 8);
+
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; CARTO'
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19
 }).addTo(map);
+
+// Invalidate Leaflet viewport size to fix container layout clipping
+setTimeout(() => { map.invalidateSize(); }, 150);
+setTimeout(() => { map.invalidateSize(); }, 600);
+setTimeout(() => { map.invalidateSize(); }, 1500);
+window.addEventListener('resize', () => { map.invalidateSize(); });
 
 let markers = {};
 let heatLayer = null;
@@ -93,9 +106,9 @@ if (closeExplainBtn) {
 }
 
 function riskStyle(risk) {
-    if (risk >= 80) return { color: '#ff0000', cls: 'danger', label: 'Risky Vehicle' };
-    if (risk >= 50) return { color: '#eab308', cls: 'suspicious', label: 'Suspicious Activity' };
-    return { color: '#22c55e', cls: 'safe', label: 'Authorized Vehicle' };
+    if (risk >= 80) return { color: '#ff0055', cls: 'danger', label: 'Risky Vehicle' };
+    if (risk >= 50) return { color: '#ffb703', cls: 'suspicious', label: 'Suspicious Activity' };
+    return { color: '#10b981', cls: 'safe', label: 'Authorized Vehicle' };
 }
 
 function formatPredictionLabel(label) {
@@ -316,20 +329,31 @@ function renderVehicleCards(items) {
         const profile = item.profile || 'normal';
         const position = item.lat && item.lon ? [item.lat, item.lon] : null;
         const isCritical = risk >= 80 || overload;
+        const isSuspicious = risk >= 50 && risk < 80;
 
         if (position) {
+            const markerRadius = isCritical ? 8 : (isSuspicious ? 6 : 4);
+            const markerOpacity = isCritical ? 0.95 : (isSuspicious ? 0.8 : 0.6);
+            const markerWeight = isCritical ? 2 : 1;
+
             if (!markers[item.vehicle_id]) {
                 markers[item.vehicle_id] = L.circleMarker(position, {
-                    radius: isCritical ? 9 : 7,
+                    radius: markerRadius,
                     color: style.color,
                     fillColor: style.color,
-                    fillOpacity: 0.92,
-                    weight: isCritical ? 3 : 2,
+                    fillOpacity: markerOpacity,
+                    weight: markerWeight,
                     className: isCritical ? 'pulse-marker-ring' : '',
                 }).addTo(map);
             } else {
                 slideMarker(markers[item.vehicle_id], position);
-                markers[item.vehicle_id].setStyle({ color: style.color, fillColor: style.color });
+                markers[item.vehicle_id].setStyle({
+                    radius: markerRadius,
+                    color: style.color,
+                    fillColor: style.color,
+                    fillOpacity: markerOpacity,
+                    weight: markerWeight
+                });
             }
             markers[item.vehicle_id].bindPopup(`
                 <div style="font-family:var(--font-sans); padding:4px;">
@@ -548,6 +572,20 @@ async function refresh() {
         renderAlerts(alerts);
         paintHeatmap(heat);
         renderVehicleCards(rowItems);
+        
+        map.invalidateSize();
+        if (rowItems && rowItems.length > 0 && !window._mapBoundsSet) {
+            const latLngs = rowItems
+                .filter(item => item.lat && item.lon)
+                .map(item => [item.lat, item.lon]);
+            if (latLngs.length > 0) {
+                try {
+                    map.fitBounds(L.latLngBounds(latLngs).pad(0.12));
+                    window._mapBoundsSet = true;
+                } catch (err) {}
+            }
+        }
+
         renderRiskChart(history);
         if (selectedLorry) {
             renderSingleLorryPanel(selectedLorry);

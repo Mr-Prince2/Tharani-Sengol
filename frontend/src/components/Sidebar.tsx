@@ -31,7 +31,7 @@ export default function Sidebar() {
   return (
     <>
       <button 
-        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-[#070d1e] rounded-lg text-cyan-400 border border-cyan-500/30 shadow-[0_0_12px_rgba(0,240,255,0.2)]"
+        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-[#09090b] rounded-lg text-white border border-white/20 shadow-[0_0_12px_rgba(255,255,255,0.1)]"
         onClick={() => setIsOpen(!isOpen)}
       >
         <Menu size={22} />
@@ -41,16 +41,16 @@ export default function Sidebar() {
         initial={{ x: -300 }}
         animate={{ x: (isOpen || !isMobile) ? 0 : -300 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="fixed md:sticky top-0 h-screen w-64 bg-[#070d1e]/95 backdrop-blur-xl border-r border-cyan-500/20 flex flex-col z-40"
+        className="fixed md:sticky top-0 h-screen w-64 bg-[#09090b]/95 backdrop-blur-xl border-r border-white/15 flex flex-col z-40"
       >
         {/* Header / Seal Branding */}
-        <div className="p-5 border-b border-cyan-500/20 flex flex-col items-center text-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
-          <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-700 rounded-xl flex items-center justify-center mb-2.5 shadow-[0_0_20px_rgba(0,240,255,0.4)] border border-cyan-400/40">
-            <Shield size={26} className="text-white" />
+        <div className="p-5 border-b border-white/15 flex flex-col items-center text-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-2xl pointer-events-none" />
+          <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mb-2.5 shadow-[0_0_20px_rgba(255,255,255,0.3)] border border-white/60">
+            <Shield size={26} className="text-black" />
           </div>
           <h1 className="text-lg font-extrabold text-white tracking-wider uppercase font-sans">Tharani Sengol</h1>
-          <span className="text-[10px] font-mono text-cyan-400 tracking-widest uppercase mt-0.5 px-2 py-0.5 bg-cyan-950/60 border border-cyan-500/30 rounded">
+          <span className="text-[10px] font-mono text-zinc-300 tracking-widest uppercase mt-0.5 px-2 py-0.5 bg-zinc-900 border border-white/20 rounded">
             LEVEL 5 CLEARANCE
           </span>
         </div>
@@ -65,10 +65,10 @@ export default function Sidebar() {
               <Link key={item.name} href={item.href} onClick={() => setIsOpen(false)}>
                 <div className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all text-sm font-medium ${
                   isActive 
-                    ? 'bg-gradient-to-r from-cyan-500/20 to-blue-600/20 border border-cyan-400/40 text-cyan-300 shadow-[0_0_15px_rgba(0,240,255,0.15)] font-semibold' 
-                    : 'text-slate-400 hover:bg-[#0f1936] hover:text-slate-200'
+                    ? 'bg-white text-black font-bold shadow-[0_0_15px_rgba(255,255,255,0.2)]' 
+                    : 'text-zinc-400 hover:bg-zinc-900 hover:text-white'
                 }`}>
-                  <Icon size={18} className={isActive ? 'text-cyan-400 drop-shadow-[0_0_6px_rgba(0,240,255,0.6)]' : 'text-slate-400'} />
+                  <Icon size={18} className={isActive ? 'text-black' : 'text-zinc-400'} />
                   <span>{item.name}</span>
                 </div>
               </Link>
@@ -77,12 +77,12 @@ export default function Sidebar() {
         </nav>
 
         {/* Footer Status Badge */}
-        <div className="p-3.5 border-t border-cyan-500/20 bg-[#050a17]/80 text-[11px] font-mono text-slate-400 flex items-center justify-between">
+        <div className="p-3.5 border-t border-white/15 bg-[#09090b] text-[11px] font-mono text-zinc-400 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#10b981]" />
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse shadow-[0_0_8px_#ffffff]" />
             <span>SAT-LINK OK</span>
           </div>
-          <span className="text-cyan-400 font-bold">TN-GOV</span>
+          <span className="text-white font-bold">TN-GOV</span>
         </div>
       </motion.aside>
 

@@ -1,14 +1,22 @@
 // Government Compliance & Enforcement Dashboard JS
 document.addEventListener("DOMContentLoaded", () => {
     // 1. Initialize Leaflet Map
-    const map = L.map('govMap').setView([10.816, 78.730], 8);
+    const map = L.map('govMap', {
+        zoomControl: true,
+        scrollWheelZoom: true,
+        maxZoom: 19
+    }).setView([10.816, 78.730], 8);
     
     // Add tile layer
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
         subdomains: 'abcd',
-        maxZoom: 20
+        maxZoom: 19
     }).addTo(map);
+
+    setTimeout(() => { map.invalidateSize(); }, 200);
+    setTimeout(() => { map.invalidateSize(); }, 800);
+    window.addEventListener('resize', () => map.invalidateSize());
 
     // Bounding Boxes / Forbidden Polygons
     const forbiddenZones = {
